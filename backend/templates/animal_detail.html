@@ -1,0 +1,8 @@
+<h2>{{ animal.name }}</h2>
+<img src="{{ animal.photo_url }}" alt="{{ animal.name }}" width="300" />
+<p><strong>Вид:</strong> {{ animal.species }}</p>
+<p><strong>Вік:</strong> {{ animal.age }} років</p>
+<p><strong>Стать:</strong> {{ 'Ч' if animal.gender == 'male' else 'Ж' }}</p>
+<p><strong>Розмір:</strong> {{ animal.size }}</p>
+<p><strong>Статус:</strong> {{ animal.status }}</p>
+<p><strong>Опис:</strong><br />{{ animal.description }}</p>

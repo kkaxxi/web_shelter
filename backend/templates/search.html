@@ -1,35 +1,95 @@
 <h2>Пошук тварин</h2>
 
-{% if current_user.is_authenticated and current_user.role == 'admin' %}
-<a href="{{ url_for('add_animal') }}">➕ Додати тварину</a>
-{% endif %}
+<form method="get">
+  <label>Категорія:</label>
+  <select name="species">
+    <option value="any">Не важливо</option>
+    <option value="кіт">Кішка</option>
+    <option value="собака">Собака</option>
+  </select>
 
-<div class="animal-list">
+  <label>Стать:</label>
+  <select name="gender">
+    <option value="any">Не важливо</option>
+    <option value="female">Ж</option>
+    <option value="male">М</option>
+  </select>
+
+  <label>Вік:</label>
+  від
+  <input type="number" name="min_age" value="0" min="0" style="width: 50px" />
+  до
+  <input type="number" name="max_age" value="25" max="25" style="width: 50px" />
+
+  <label>Розмір:</label>
+  <select name="size">
+    <option value="any">Не важливо</option>
+    <option value="small">Маленький</option>
+    <option value="medium">Середній</option>
+    <option value="large">Великий</option>
+  </select>
+
+  <label>Статус:</label>
+  <select name="status">
+    <option value="any">Усі</option>
+    <option value="в притулку">в притулку</option>
+    <option value="усиновлено">усиновлено</option>
+  </select>
+
+  <button type="submit">Застосувати фільтри</button>
+  <a href="{{ url_for('search_animals') }}">Очистити фільтри</a>
+</form>
+
+<hr />
+
+<div class="card-container">
   {% for animal in animals %}
-  <div class="animal-card">
-    <img
-      src="{{ animal.photo_url }}"
-      alt="{{ animal.name }}"
-      width="200"
-    /><br />
-    <strong>{{ animal.name }}</strong> ({{ animal.species }})<br />
-    Вік: {{ animal.age }}<br />
-    Стать: {{ animal.gender }}<br />
-    Статус: {{ animal.status }}<br />
-    <p>{{ animal.description }}</p>
+  <div class="card">
+    <a href="{{ url_for('animal_detail', animal_id=animal.id) }}">
+      <img src="{{ animal.photo_url }}" alt="{{ animal.name }}" width="200" />
+      <h4>{{ animal.name }}</h4>
+    </a>
 
     {% if current_user.is_authenticated and current_user.role == 'admin' %}
-    <a href="{{ url_for('edit_animal', animal_id=animal.id) }}"
-      >✏️ Редагувати</a
-    >
-    <form
-      method="post"
-      action="{{ url_for('delete_animal', animal_id=animal.id) }}"
-      style="display: inline"
-    >
-      <button type="submit">🗑️ Видалити</button>
-    </form>
+    <div style="margin-top: 10px">
+      <a href="{{ url_for('edit_animal', animal_id=animal.id) }}"
+        >✏️ Редагувати</a
+      >
+      |
+      <form
+        action="{{ url_for('delete_animal', animal_id=animal.id) }}"
+        method="post"
+        style="display: inline"
+        onsubmit="return confirm('Точно видалити?')"
+      >
+        <button
+          type="submit"
+          style="color: red; background: none; border: none; cursor: pointer"
+        >
+          🗑️ Видалити
+        </button>
+      </form>
+    </div>
     {% endif %}
   </div>
+
   {% endfor %}
 </div>
+
+<style>
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 220px;
+    text-align: center;
+  }
+  .card img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>

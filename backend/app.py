@@ -113,8 +113,33 @@ def logout():
 
 @app.route('/search')
 def search_animals():
-    animals = Animal.query.all()
+    query = Animal.query
+
+    species = request.args.get('species')
+    gender = request.args.get('gender')
+    size = request.args.get('size')
+    status = request.args.get('status')
+    min_age = request.args.get('min_age', type=int, default=0)
+    max_age = request.args.get('max_age', type=int, default=25)
+
+    if species and species != 'any':
+        query = query.filter_by(species=species)
+    if gender and gender != 'any':
+        query = query.filter_by(gender=gender)
+    if size and size != 'any':
+        query = query.filter_by(size=size)
+    if status and status != 'any':
+        query = query.filter_by(status=status)
+
+    query = query.filter(Animal.age >= min_age, Animal.age <= max_age)
+    animals = query.all()
+
     return render_template('search.html', animals=animals)
+
+@app.route('/animal/<int:animal_id>')
+def animal_detail(animal_id):
+    animal = Animal.query.get_or_404(animal_id)
+    return render_template('animal_detail.html', animal=animal)
 
 
 @app.route('/admin/add-animal', methods=['GET', 'POST'])
