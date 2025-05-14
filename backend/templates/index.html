@@ -11,6 +11,11 @@
   <body>
     <h1>Ласкаво просимо!</h1>
     <p>Це головна сторінка притулку.</p>
-    <p><a href="/register">Зареєструватись</a> | <a href="/login">Увійти</a></p>
+    <p>
+      <a href="/register">Зареєструватись</a> | <a href="/login">Увійти</a> |
+      <a href="{{ url_for('search_animals') }}" class="search-button">
+        Пошук тваринок</a
+      >
+    </p>
   </body>
 </html>

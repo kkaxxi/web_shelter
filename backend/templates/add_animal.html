@@ -1,0 +1,51 @@
+<h2>Додати тварину</h2>
+<form method="post" enctype="multipart/form-data">
+  <input type="text" name="name" placeholder="Ім’я" required /><br />
+
+  <input
+    type="text"
+    name="species"
+    placeholder="Вид (кіт, собака...)"
+    required
+  /><br />
+
+  <input
+    type="number"
+    name="age"
+    placeholder="Вік (число)"
+    min="0"
+    required
+  /><br />
+
+  <label>Стать:</label>
+  <select name="gender" required>
+    <option value="male">Ч</option>
+    <option value="female">Ж</option></select
+  ><br />
+
+  <label>Розмір:</label>
+  <select name="size" required>
+    <option value="small">Малий</option>
+    <option value="medium">Середній</option>
+    <option value="large">Великий</option></select
+  ><br />
+
+  <label>Статус:</label>
+  <select name="status" required>
+    <option value="в притулку">в притулку</option>
+    <option value="усиновлено">усиновлено</option></select
+  ><br />
+
+  <label>Фото:</label>
+  <input type="file" name="photo" accept="image/*" required /><br />
+
+  <textarea
+    name="description"
+    placeholder="Опис..."
+    rows="4"
+    cols="40"
+  ></textarea
+  ><br />
+
+  <button type="submit">Додати</button>
+</form>

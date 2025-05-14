@@ -5,6 +5,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from werkzeug.utils import secure_filename
+from PIL import Image
+import uuid
+
 
 
 app = Flask(__name__)
@@ -30,6 +34,25 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(10), default='user')  # або 'admin'
+
+class Animal(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    species = db.Column(db.String(50), nullable=False)  # Вид
+    age = db.Column(db.Integer, nullable=False)
+    gender = db.Column(db.String(10), nullable=False)
+    size = db.Column(db.String(20))  
+    description = db.Column(db.Text)
+    status = db.Column(db.String(50), default='в притулку')  # або "усиновлено"
+    photo_url = db.Column(db.String(300))  # Посилання на фото
+
+UPLOAD_FOLDER = os.path.join(basedir, '..', 'static', 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Завантаження користувача
 @login_manager.user_loader
@@ -80,13 +103,19 @@ def login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return f"Привіт, {current_user.username}!"
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+@app.route('/search')
+def search_animals():
+    animals = Animal.query.all()
+    return render_template('search.html', animals=animals)
+
 
 @app.route('/admin/add-animal', methods=['GET', 'POST'])
 @login_required
@@ -99,25 +128,120 @@ def add_animal():
         species = request.form['species']
         age = request.form['age']
         gender = request.form['gender']
-        description = request.form['description']
+        size = request.form['size']
         status = request.form['status']
-        photo_url = request.form['photo_url']
+        description = request.form['description']
+
+        if int(age) < 0:
+            flash("Вік не може бути менше 0")
+            return redirect(url_for('add_animal'))
+
+        photo_file = request.files.get('photo')
+        photo_url = ''
+        if photo_file and photo_file.filename != '':
+            filename = f"{uuid.uuid4().hex}_{photo_file.filename}"
+            photo_path = os.path.join('static/uploads', filename)
+            full_path = os.path.join(app.root_path, photo_path)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+            image = Image.open(photo_file)
+            image.thumbnail((800, 800))
+            image.save(full_path, optimize=True, quality=70)
+
+            photo_url = '/' + photo_path.replace('\\', '/')
 
         new_animal = Animal(
             name=name,
             species=species,
             age=age,
             gender=gender,
-            description=description,
+            size=size,
             status=status,
-            photo_url=photo_url
+            photo_url=photo_url,
+            description=description
         )
         db.session.add(new_animal)
         db.session.commit()
         flash('Тваринку додано успішно!')
-        return redirect(url_for('search_animals'))  # твоя сторінка зі списком тварин
+        return redirect(url_for('search_animals'))
 
     return render_template('add_animal.html')
+
+@app.route('/admin/edit-animal/<int:animal_id>', methods=['GET', 'POST'])
+@login_required
+def edit_animal(animal_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    animal = Animal.query.get_or_404(animal_id)
+
+    if request.method == 'POST':
+        name = request.form['name']
+        species = request.form['species']
+        age = request.form['age']
+        gender = request.form['gender']
+        size = request.form['size']
+        status = request.form['status']
+        description = request.form['description']
+
+        if int(age) < 0:
+            flash("Вік не може бути менше 0")
+            return redirect(url_for('edit_animal', animal_id=animal_id))
+
+        animal.name = name
+        animal.species = species
+        animal.age = age
+        animal.gender = gender
+        animal.size = size
+        animal.status = status
+        animal.description = description
+
+        photo_file = request.files.get('photo')
+        if photo_file and photo_file.filename != '':
+            # 🧹 Видалити попереднє фото (тільки якщо воно локальне)
+            if animal.photo_url and animal.photo_url.startswith('/static/uploads/'):
+                old_path = os.path.join(app.root_path, animal.photo_url.strip('/'))
+                if os.path.exists(old_path):
+                    os.remove(old_path)
+
+            # 📥 Зберегти нове фото
+            filename = f"{uuid.uuid4().hex}_{photo_file.filename}"
+            photo_path = os.path.join('static/uploads', filename)
+            full_path = os.path.join(app.root_path, photo_path)
+            os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+            image = Image.open(photo_file)
+            image.thumbnail((800, 800))
+            image.save(full_path, optimize=True, quality=70)
+
+            animal.photo_url = '/' + photo_path.replace('\\', '/')
+
+        db.session.commit()
+        flash("Зміни збережено")
+        return redirect(url_for('search_animals'))
+
+    return render_template('edit_animal.html', animal=animal)
+
+@app.route('/admin/delete-animal/<int:animal_id>', methods=['POST'])
+@login_required
+def delete_animal(animal_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    animal = Animal.query.get_or_404(animal_id)
+
+    # 🧹 Видалення фото, якщо воно локальне (у static/uploads)
+    if animal.photo_url and animal.photo_url.startswith('/static/uploads/'):
+        photo_path = os.path.join(app.root_path, animal.photo_url.strip('/'))
+        if os.path.exists(photo_path):
+            os.remove(photo_path)
+
+    db.session.delete(animal)
+    db.session.commit()
+    flash("Тварину успішно видалено!")
+    return redirect(url_for('search_animals'))
+
+
 
 # Запуск
 if __name__ == '__main__':

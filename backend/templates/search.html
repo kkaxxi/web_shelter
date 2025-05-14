@@ -1,3 +1,35 @@
+<h2>Пошук тварин</h2>
+
 {% if current_user.is_authenticated and current_user.role == 'admin' %}
-<a href="{{ url_for('add_animal') }}" class="add-button">➕ Додати тварину</a>
+<a href="{{ url_for('add_animal') }}">➕ Додати тварину</a>
 {% endif %}
+
+<div class="animal-list">
+  {% for animal in animals %}
+  <div class="animal-card">
+    <img
+      src="{{ animal.photo_url }}"
+      alt="{{ animal.name }}"
+      width="200"
+    /><br />
+    <strong>{{ animal.name }}</strong> ({{ animal.species }})<br />
+    Вік: {{ animal.age }}<br />
+    Стать: {{ animal.gender }}<br />
+    Статус: {{ animal.status }}<br />
+    <p>{{ animal.description }}</p>
+
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <a href="{{ url_for('edit_animal', animal_id=animal.id) }}"
+      >✏️ Редагувати</a
+    >
+    <form
+      method="post"
+      action="{{ url_for('delete_animal', animal_id=animal.id) }}"
+      style="display: inline"
+    >
+      <button type="submit">🗑️ Видалити</button>
+    </form>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>

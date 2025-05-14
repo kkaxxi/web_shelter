@@ -1,0 +1,46 @@
+<h2>Редагування тварини</h2>
+
+{% if animal.photo_url %}
+  <p><strong>Поточне фото:</strong></p>
+  <img src="{{ animal.photo_url }}" alt="Фото тварини" style="max-width: 200px;"><br>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+  <input type="text" name="name" placeholder="Ім’я" value="{{ animal.name }}" required><br>
+
+  <input type="text" name="species" placeholder="Вид" value="{{ animal.species }}" required><br>
+
+  <input type="number" name="age" placeholder="Вік" value="{{ animal.age }}" min="0" required><br>
+
+  <label>Стать:</label>
+  <select name="gender" required>
+    <option value="male" {% if animal.gender == 'male' %}selected{% endif %}>Ч</option>
+    <option value="female" {% if animal.gender == 'female' %}selected{% endif %}>Ж</option>
+  </select><br>
+
+  <label>Розмір:</label>
+  <select name="size" required>
+    <option value="small" {% if animal.size == 'small' %}selected{% endif %}>Малий</option>
+    <option value="medium" {% if animal.size == 'medium' %}selected{% endif %}>Середній</option>
+    <option value="large" {% if animal.size == 'large' %}selected{% endif %}>Великий</option>
+  </select><br>
+
+  <label>Статус:</label>
+  <select name="status" required>
+    <option value="в притулку" {% if animal.status == 'в притулку' %}selected{% endif %}>в притулку</option>
+    <option value="усиновлено" {% if animal.status == 'усиновлено' %}selected{% endif %}>усиновлено</option>
+  </select><br>
+
+  <label>Нове фото:</label>
+  <input type="file" name="photo" accept="image/*"><br>
+
+  <textarea name="description" placeholder="Опис" rows="4" cols="40">{{ animal.description }}</textarea><br>
+
+  <button type="submit">Зберегти зміни</button>
+</form>
+
+<!-- 🔴 Видалення тварини -->
+<form method="post" action="{{ url_for('delete_animal', animal_id=animal.id) }}"
+      onsubmit="return confirm('Ви дійсно хочете видалити цю тварину?');">
+  <button type="submit" style="background-color: red; color: white;">Видалити тварину</button>
+</form>
