@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Притулок тварин{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <header>
+      <h1>Притулок тварин</h1>
+      <nav>
+        <a href="{{ url_for('index') }}">Головна</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('search_animals') }}">Пошук</a>
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('add_animal') }}">Додати тварину</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Вийти</a>
+        {% else %}
+        <a href="{{ url_for('login') }}">Увійти</a>
+        <a href="{{ url_for('register') }}">Реєстрація</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <ul class="flash">
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %} {% endwith %} {% block content %}{% endblock %}
+  </body>
+</html>

@@ -46,6 +46,11 @@ class Animal(db.Model):
     status = db.Column(db.String(50), default='в притулку')  # або "усиновлено"
     photo_url = db.Column(db.String(300))  # Посилання на фото
 
+class Favorite(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    animal_id = db.Column(db.Integer, db.ForeignKey('animal.id'), nullable=False)
+
 UPLOAD_FOLDER = os.path.join(basedir, '..', 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB
@@ -113,14 +118,16 @@ def logout():
 
 @app.route('/search')
 def search_animals():
-    query = Animal.query
-
+    # Отримуємо параметри фільтра з URL
     species = request.args.get('species')
     gender = request.args.get('gender')
+    min_age = request.args.get('min_age', 0, type=int)
+    max_age = request.args.get('max_age', 100, type=int)
     size = request.args.get('size')
     status = request.args.get('status')
-    min_age = request.args.get('min_age', type=int, default=0)
-    max_age = request.args.get('max_age', type=int, default=25)
+
+    # Запит до БД
+    query = Animal.query
 
     if species and species != 'any':
         query = query.filter_by(species=species)
@@ -132,9 +139,16 @@ def search_animals():
         query = query.filter_by(status=status)
 
     query = query.filter(Animal.age >= min_age, Animal.age <= max_age)
+
     animals = query.all()
 
-    return render_template('search.html', animals=animals)
+    # 👉 Передаємо список ID улюблених тварин
+    fav_ids = []
+    if current_user.is_authenticated:
+        fav_ids = [f.animal_id for f in Favorite.query.filter_by(user_id=current_user.id).all()]
+
+    return render_template('search.html', animals=animals, user_fav_ids=fav_ids)
+
 
 @app.route('/animal/<int:animal_id>')
 def animal_detail(animal_id):
@@ -266,6 +280,24 @@ def delete_animal(animal_id):
     flash("Тварину успішно видалено!")
     return redirect(url_for('search_animals'))
 
+@app.route('/toggle-favorite/<int:animal_id>', methods=['POST'])
+@login_required
+def toggle_favorite(animal_id):
+    fav = Favorite.query.filter_by(user_id=current_user.id, animal_id=animal_id).first()
+    if fav:
+        db.session.delete(fav)
+    else:
+        new_fav = Favorite(user_id=current_user.id, animal_id=animal_id)
+        db.session.add(new_fav)
+    db.session.commit()
+    return redirect(request.referrer or url_for('search_animals'))
+
+@app.route('/favorites')
+@login_required
+def favorites():
+    favs = Favorite.query.filter_by(user_id=current_user.id).all()
+    animals = [Animal.query.get(f.animal_id) for f in favs]
+    return render_template('favorites.html', animals=animals)
 
 
 # Запуск

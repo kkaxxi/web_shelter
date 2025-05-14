@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+
+{% block title %}Редагування тварини{% endblock %}
+
+{% block content %}
 <h2>Редагування тварини</h2>
 
 {% if animal.photo_url %}
@@ -31,10 +36,10 @@
     <option value="усиновлено" {% if animal.status == 'усиновлено' %}selected{% endif %}>усиновлено</option>
   </select><br>
 
-  <label>Нове фото:</label>
+  <label>Нове фото (не обов'язково):</label>
   <input type="file" name="photo" accept="image/*"><br>
 
-  <textarea name="description" placeholder="Опис" rows="4" cols="40">{{ animal.description }}</textarea><br>
+  <textarea name="description" placeholder="Опис..." rows="4" cols="40">{{ animal.description }}</textarea><br>
 
   <button type="submit">Зберегти зміни</button>
 </form>
@@ -44,3 +49,4 @@
       onsubmit="return confirm('Ви дійсно хочете видалити цю тварину?');">
   <button type="submit" style="background-color: red; color: white;">Видалити тварину</button>
 </form>
+{% endblock %}
