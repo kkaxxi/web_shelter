@@ -1,0 +1,14 @@
+<h2>Додати тварину</h2>
+<form method="post">
+  <input type="text" name="name" placeholder="Ім’я" required><br>
+  <input type="text" name="species" placeholder="Вид (кіт, собака...)" required><br>
+  <input type="number" name="age" placeholder="Вік" required><br>
+  <select name="gender" required>
+    <option value="male">Чоловіча</option>
+    <option value="female">Жіноча</option>
+  </select><br>
+  <input type="text" name="status" placeholder="Статус (в притулку/усиновлений)" required><br>
+  <input type="url" name="photo_url" placeholder="Посилання на фото"><br>
+  <textarea name="description" placeholder="Опис"></textarea><br>
+  <button type="submit">Додати</button>
+</form>
