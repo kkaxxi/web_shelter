@@ -8,6 +8,7 @@ load_dotenv()
 from werkzeug.utils import secure_filename
 from PIL import Image
 import uuid
+from datetime import datetime
 
 
 
@@ -50,6 +51,27 @@ class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     animal_id = db.Column(db.Integer, db.ForeignKey('animal.id'), nullable=False)
+
+class Donation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Integer, nullable=False)
+    is_monthly = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class VolunteerRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    help_type = db.Column(db.String(100), nullable=False)
+    comment = db.Column(db.Text)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 UPLOAD_FOLDER = os.path.join(basedir, '..', 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -292,12 +314,56 @@ def toggle_favorite(animal_id):
     db.session.commit()
     return redirect(request.referrer or url_for('search_animals'))
 
-@app.route('/favorites')
-@login_required
-def favorites():
-    favs = Favorite.query.filter_by(user_id=current_user.id).all()
-    animals = [Animal.query.get(f.animal_id) for f in favs]
-    return render_template('favorites.html', animals=animals)
+@app.route('/help', methods=['GET', 'POST'])
+def help_page():
+    if request.method == 'POST':
+        form_type = request.form.get('form_type')
+
+        if form_type == 'donation':
+            amount_str = request.form.get('custom_amount') if request.form.get('amount') == 'custom' else request.form.get('amount')
+            try:
+                amount = int(amount_str)
+            except (ValueError, TypeError):
+                flash("Некоректна сума внеску.")
+                return redirect(url_for('help_page'))
+
+            is_monthly = request.form.get('frequency') == 'monthly'
+            donation = Donation(amount=amount, is_monthly=is_monthly)
+            if current_user.is_authenticated:
+                donation.user_id = current_user.id
+            db.session.add(donation)
+            db.session.commit()
+            flash("Дякуємо за вашу підтримку!")
+
+        elif form_type == 'volunteer':
+            help_type = request.form.get('help_type')
+            comment = request.form.get('comment', '')
+            request_vol = VolunteerRequest(help_type=help_type, comment=comment)
+            if current_user.is_authenticated:
+                request_vol.user_id = current_user.id
+            db.session.add(request_vol)
+            db.session.commit()
+            flash("Запит волонтерства отримано!")
+
+        elif form_type == 'feedback':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            message = request.form.get('message')
+
+            if not name or not email or not message:
+                flash("Усі поля зворотного зв’язку обов’язкові.")
+                return redirect(url_for('help_page'))
+
+            feedback = Feedback(name=name, email=email, message=message)
+            db.session.add(feedback)
+            db.session.commit()
+            flash("Дякуємо за зворотній зв’язок!")
+
+        return redirect(url_for('help_page'))  # Щоб уникнути повторного сабміту при оновленні сторінки
+
+    return render_template("help.html")
+
+
 
 
 # Запуск
