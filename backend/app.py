@@ -7,7 +7,7 @@ from flask_wtf.csrf import CSRFProtect
 csrf = CSRFProtect()
 
 
-from routes import auth_bp, animals_bp, help_bp
+from routes import auth_bp, animals_bp, help_bp, reports_bp
 
 load_dotenv()
 app = Flask(__name__)
@@ -32,6 +32,7 @@ def load_user(user_id):
 app.register_blueprint(auth_bp)
 app.register_blueprint(animals_bp)
 app.register_blueprint(help_bp)
+app.register_blueprint(reports_bp)
 
 @app.route('/')
 def index():
@@ -40,4 +41,6 @@ def index():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        print(app.url_map)  # ⬅️ Додай це
     app.run(debug=True)
+

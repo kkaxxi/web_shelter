@@ -46,3 +46,29 @@ class Feedback(db.Model):
     email = db.Column(db.String(150), nullable=False)
     message = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class MonthlyReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.String(20), nullable=False)
+    month_number = db.Column(db.Integer, nullable=False)  # Наприклад: 1 = Січень, 2 = Лютий і т.д.
+
+    
+    income = db.Column(db.Integer, default=0)
+    expenses = db.Column(db.Integer, default=0)
+
+    # Витрати деталізовано
+    operating_costs = db.Column(db.Integer, default=0)
+    vet_services = db.Column(db.Integer, default=0)
+    garbage = db.Column(db.Integer, default=0)
+    salary = db.Column(db.Integer, default=0)
+    dry_food = db.Column(db.Integer, default=0)
+    cat_litter = db.Column(db.Integer, default=0)
+    grains = db.Column(db.Integer, default=0)
+    construction = db.Column(db.Integer, default=0)
+
+    # Інше
+    adopted_animals = db.Column(db.Integer, default=0)
+    new_animals = db.Column(db.Integer, default=0)
+    pdf_url = db.Column(db.String(300))
+
