@@ -6,6 +6,12 @@ block content %}
   фінансові звіти та інформацію про тварин.
 </p>
 
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+<p>
+  <a href="{{ url_for('reports.add_report') }}">➕ Додати звіт</a>
+</p>
+{% endif %}
+
 <!-- Вкладки по роках -->
 <div class="year-tabs">
   {% for y in years %}
@@ -27,21 +33,22 @@ block content %}
     {% for r in quarterly[i] %}
     <div class="monthly-report">
       <h5>{{ r.month }}</h5>
-      <a href="{{ r.pdf_url }}" download>📄 Переглянути PDF</a>
-      <ul>
-        <li>Надходження: {{ r.income }} грн</li>
-        <li>Витрати: {{ r.expenses }} грн</li>
-        <li>– Функціонування притулку: {{ r.operating_costs }} грн</li>
-        <li>– Ветпослуги: {{ r.vet_services }} грн</li>
-        <li>– Вивіз сміття: {{ r.garbage }} грн</li>
-        <li>– Заробітна плата: {{ r.salary }} грн</li>
-        <li>– Сухий корм: {{ r.dry_food }} грн</li>
-        <li>– Котячий наповнювач: {{ r.cat_litter }} грн</li>
-        <li>– Крупи та екструдований корм: {{ r.grains }} грн</li>
-        <li>– Будматеріали: {{ r.construction }} грн</li>
-        <li>🐾 Усиновлено: {{ r.adopted_animals }} тварин</li>
-        <li>➕ Нові тварини: {{ r.new_animals }}</li>
-      </ul>
+
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <form
+        method="POST"
+        action="{{ url_for('reports.delete_report', report_id=r.id) }}"
+      >
+        {{ form.hidden_tag() }}
+        <button type="submit">🗑️</button>
+      </form>
+
+      {% endif %}
+
+      <a
+        href="{{ url_for('reports.serve_pdf', filename=r.pdf_url.split('/')[-1]) }}"
+        >📄 Переглянути PDF</a
+      >
     </div>
     {% endfor %}
   </div>

@@ -54,3 +54,23 @@ class AnimalForm(FlaskForm):
 class DummyForm(FlaskForm):
     submit = SubmitField('')  # пустий submit
 
+class MonthlyReportForm(FlaskForm):
+    year = IntegerField('Рік', validators=[DataRequired()])
+    month = StringField('Місяць', validators=[DataRequired()])
+    month_number = IntegerField('Номер місяця (1-12)', validators=[DataRequired(), NumberRange(min=1, max=12)])
+
+    income = IntegerField('Надходження')
+    expenses = IntegerField('Витрати')
+    
+    operating_costs = IntegerField('Функціонування притулку')
+    vet_services = IntegerField('Ветеринарні послуги/препарати')
+    garbage = IntegerField('Вивіз сміття')
+    salary = IntegerField('Заробітна плата')
+    dry_food = IntegerField('Сухий корм')
+    cat_litter = IntegerField('Котячий наповнювач')
+    grains = IntegerField('Екструдований корм та крупи')
+    construction = IntegerField('Будматеріали')
+
+    adopted_animals = IntegerField('Усиновлено тварин')
+    new_animals = IntegerField('Нові тварини')
+    submit = SubmitField('Додати звіт')

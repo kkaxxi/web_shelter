@@ -19,6 +19,12 @@ UPLOAD_FOLDER = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'static
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# У app.py
+REPORTS_FOLDER = os.path.join(basedir, 'static', 'reports')
+app.config['REPORTS_FOLDER'] = REPORTS_FOLDER
+os.makedirs(REPORTS_FOLDER, exist_ok=True)
+
+
 db.init_app(app)
 
 login_manager = LoginManager()
@@ -41,6 +47,5 @@ def index():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        print(app.url_map)  # ⬅️ Додай це
     app.run(debug=True)
 

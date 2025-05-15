@@ -1,0 +1,30 @@
+{% extends 'base.html' %} {% block title %}Додати фінансовий звіт{% endblock %}
+{% block content %}
+<h2>Додати новий звіт</h2>
+<form method="post" enctype="multipart/form-data">
+  {{ form.hidden_tag() }} {{ form.year.label }} {{ form.year() }}<br />
+  {{ form.month.label }} {{ form.month() }}<br />
+  {{ form.month_number.label }} {{ form.month_number() }}<br />
+
+  <hr />
+  {{ form.income.label }} {{ form.income() }}<br />
+  {{ form.expenses.label }} {{ form.expenses() }}<br />
+
+  <hr />
+  {{ form.operating_costs.label }} {{ form.operating_costs() }}<br />
+  {{ form.vet_services.label }} {{ form.vet_services() }}<br />
+  {{ form.garbage.label }} {{ form.garbage() }}<br />
+  {{ form.salary.label }} {{ form.salary() }}<br />
+  {{ form.dry_food.label }} {{ form.dry_food() }}<br />
+  {{ form.cat_litter.label }} {{ form.cat_litter() }}<br />
+  {{ form.grains.label }} {{ form.grains() }}<br />
+  {{ form.construction.label }} {{ form.construction() }}<br />
+
+  <hr />
+  {{ form.adopted_animals.label }} {{ form.adopted_animals() }}<br />
+  {{ form.new_animals.label }} {{ form.new_animals() }}<br />
+
+  <hr />
+  {{ form.submit() }}
+</form>
+{% endblock %}
