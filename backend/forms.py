@@ -27,6 +27,11 @@ class FeedbackForm(FlaskForm):
     message = TextAreaField('Повідомлення', validators=[DataRequired()])
     submit = SubmitField('Надіслати')
 
+class FeedbackReplyForm(FlaskForm):
+    reply = TextAreaField("Відповідь", validators=[DataRequired()])
+    submit = SubmitField("Надіслати відповідь")
+
+
 class VolunteerForm(FlaskForm):
     help_type = SelectField(
         'Спосіб допомоги',

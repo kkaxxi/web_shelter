@@ -32,6 +32,7 @@ class Donation(db.Model):
     is_monthly = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    
 
 class VolunteerRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,7 +46,9 @@ class Feedback(db.Model):
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     message = db.Column(db.Text, nullable=False)
+    reply = db.Column(db.Text)  # 💬 відповідь адміністратора
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class MonthlyReport(db.Model):
     id = db.Column(db.Integer, primary_key=True)

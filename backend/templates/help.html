@@ -2,69 +2,39 @@
 block content %}
 <h2>Допоможи хвостику 💛</h2>
 
-<!-- Навігаційні таби -->
-<div class="tabs">
-  <button onclick="showTab('donation')">Донат</button>
-  <button onclick="showTab('volunteer')">Волонтерство</button>
-  <button onclick="showTab('contact')">Зв’язок</button>
-</div>
-
-<!-- Таб: Донейти -->
-<div class="tab" id="donation">
-  <h3>Підтримати фінансово</h3>
-  <form method="post">
-    {{ donation_form.hidden_tag() }}
-    <label>{{ donation_form.amount.label }}</label>
-    {{ donation_form.amount() }}<br />
-
-    <label>{{ donation_form.is_monthly.label }}</label>
-    {{ donation_form.is_monthly() }}<br />
-
-    {{ donation_form.submit() }}
-  </form>
-</div>
-
-<!-- Таб: Волонтерство -->
-<div class="tab" id="volunteer" style="display: none">
-  <h3>Стати волонтером</h3>
-  <form method="post">
-    {{ volunteer_form.hidden_tag() }} {{ volunteer_form.help_type.label }} {{
-    volunteer_form.help_type() }}<br />
-    {{ volunteer_form.comment.label }}<br />{{ volunteer_form.comment(rows=3,
-    cols=40) }}<br />
-    {{ volunteer_form.submit() }}
-  </form>
-</div>
-
-<!-- Таб: Зворотній зв’язок -->
-<div class="tab" id="contact" style="display: none">
-  <h3>Зворотній зв’язок</h3>
-  <form method="post">
-    {{ feedback_form.hidden_tag() }} {{ feedback_form.name.label }} {{
-    feedback_form.name() }}<br />
-    {{ feedback_form.email.label }} {{ feedback_form.email() }}<br />
-    {{ feedback_form.message.label }}<br />{{ feedback_form.message(rows=4,
-    cols=40) }}<br />
-    {{ feedback_form.submit() }}
-  </form>
-</div>
+<h3>💸 Донат</h3>
+<form method="post">
+  {{ donation_form.hidden_tag() }} {{ donation_form.amount.label }} {{
+  donation_form.amount() }}<br />
+  {{ donation_form.is_monthly.label }} {{ donation_form.is_monthly() }}<br />
+  {{ donation_form.submit() }}
+</form>
 
 <hr />
 
-<!-- Додаткові посилання -->
-<p>
-  <a href="{{ url_for('animals.search_animals') }}">🔍 Переглянути тварин</a> |
-  <a href="#volunteer" onclick="showTab('volunteer')"
-    >🐾 Усиновити / допомогти</a
-  >
-</p>
+<h3>🐾 Стати волонтером</h3>
+<form method="post">
+  {{ volunteer_form.hidden_tag() }} {{ volunteer_form.help_type.label }} {{
+  volunteer_form.help_type() }}<br />
+  {{ volunteer_form.comment.label }}<br />
+  {{ volunteer_form.comment(rows=3) }}<br />
+  {{ volunteer_form.submit() }}
+</form>
 
-<script>
-  function showTab(id) {
-    document
-      .querySelectorAll(".tab")
-      .forEach((el) => (el.style.display = "none"));
-    document.getElementById(id).style.display = "block";
-  }
-</script>
+<hr />
+
+<h3>📬 Зворотній зв’язок</h3>
+<form method="post">
+  {{ feedback_form.hidden_tag() }} {{ feedback_form.name.label }} {{
+  feedback_form.name() }}<br />
+  {{ feedback_form.email.label }} {{ feedback_form.email() }}<br />
+  {{ feedback_form.message.label }}<br />{{ feedback_form.message(rows=4) }}<br />
+  {{ feedback_form.submit() }}
+</form>
+
+<h4>🔍 Перевірити відповідь</h4>
+<form action="{{ url_for('help.feedback_status_redirect') }}" method="post">
+  <input type="email" name="email" placeholder="Ваш email" required />
+  <button type="submit">Перевірити</button>
+</form>
 {% endblock %}

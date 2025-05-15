@@ -1,0 +1,19 @@
+{% extends 'base.html' %} {% block title %}Відповідь на повідомлення{% endblock
+%} {% block content %}
+<h2>✉️ Відповідь на повідомлення від {{ feedback.name }}</h2>
+
+<p><strong>Email:</strong> {{ feedback.email }}</p>
+<p><strong>Повідомлення:</strong><br />{{ feedback.message }}</p>
+<p>
+  <strong>Дата:</strong> {{ feedback.timestamp.strftime('%d.%m.%Y %H:%M') }}
+</p>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+  <label>{{ form.reply.label }}</label><br />
+  {{ form.reply(rows=6, cols=60) }}<br /><br />
+  {{ form.submit() }}
+</form>
+
+<p><a href="{{ url_for('help.view_feedbacks') }}">⬅ Назад</a></p>
+{% endblock %}
