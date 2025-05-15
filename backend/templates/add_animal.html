@@ -1,54 +1,32 @@
 {% extends "base.html" %} {% block title %}Додати тварину{% endblock %} {% block
 content %}
 <h2>Додати тварину</h2>
+
 <form method="post" enctype="multipart/form-data">
-  <input type="text" name="name" placeholder="Ім’я" required /><br />
+  {{ form.hidden_tag() }} {{ form.name.label }}<br />
+  {{ form.name() }}<br /><br />
 
-  <input
-    type="text"
-    name="species"
-    placeholder="Вид (кіт, собака...)"
-    required
-  /><br />
+  {{ form.species.label }}<br />
+  {{ form.species() }}<br /><br />
 
-  <input
-    type="number"
-    name="age"
-    placeholder="Вік (число)"
-    min="0"
-    required
-  /><br />
+  {{ form.age.label }}<br />
+  {{ form.age() }}<br /><br />
 
-  <label>Стать:</label>
-  <select name="gender" required>
-    <option value="male">Ч</option>
-    <option value="female">Ж</option></select
-  ><br />
+  {{ form.gender.label }}<br />
+  {{ form.gender() }}<br /><br />
 
-  <label>Розмір:</label>
-  <select name="size" required>
-    <option value="small">Малий</option>
-    <option value="medium">Середній</option>
-    <option value="large">Великий</option></select
-  ><br />
+  {{ form.size.label }}<br />
+  {{ form.size() }}<br /><br />
 
-  <label>Статус:</label>
-  <select name="status" required>
-    <option value="в притулку">в притулку</option>
-    <option value="усиновлено">усиновлено</option></select
-  ><br />
+  {{ form.status.label }}<br />
+  {{ form.status() }}<br /><br />
 
-  <label>Фото:</label>
-  <input type="file" name="photo" accept="image/*" required /><br />
+  {{ form.photo.label }}<br />
+  {{ form.photo() }}<br /><br />
 
-  <textarea
-    name="description"
-    placeholder="Опис..."
-    rows="4"
-    cols="40"
-  ></textarea
-  ><br />
+  {{ form.description.label }}<br />
+  {{ form.description(rows=4, cols=40) }}<br /><br />
 
-  <button type="submit">Додати</button>
+  {{ form.submit() }}
 </form>
 {% endblock %}

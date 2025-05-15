@@ -12,83 +12,40 @@ block content %}
 <!-- Таб: Донейти -->
 <div class="tab" id="donation">
   <h3>Підтримати фінансово</h3>
-  <form method="post" action="{{ url_for('help_page') }}">
-    <input type="hidden" name="form_type" value="donation" />
-    <label>
-      <input type="radio" name="frequency" value="one_time" checked />
-      Разовий внесок
-    </label>
-    <label>
-      <input type="radio" name="frequency" value="monthly" />
-      Щомісячна допомога </label
-    ><br /><br />
+  <form method="post">
+    {{ donation_form.hidden_tag() }}
+    <label>{{ donation_form.amount.label }}</label>
+    {{ donation_form.amount() }}<br />
 
-    <label>Сума:</label><br />
-    <select name="amount">
-      <option value="50">50 UAH</option>
-      <option value="100">100 UAH</option>
-      <option value="200">200 UAH</option>
-      <option value="500">500 UAH</option>
-      <option value="1000">1000 UAH</option>
-      <option value="custom">Інша</option></select
-    ><br /><br />
+    <label>{{ donation_form.is_monthly.label }}</label>
+    {{ donation_form.is_monthly() }}<br />
 
-    <label>Інша сума:</label>
-    <input
-      type="number"
-      name="custom_amount"
-      placeholder="Введіть суму"
-    /><br /><br />
-
-    <button type="submit">Підтримати</button>
+    {{ donation_form.submit() }}
   </form>
 </div>
 
 <!-- Таб: Волонтерство -->
 <div class="tab" id="volunteer" style="display: none">
   <h3>Стати волонтером</h3>
-  <form method="post" action="{{ url_for('help_page') }}">
-    <input type="hidden" name="form_type" value="volunteer" />
-
-    <label>Як ви хочете допомогти?</label><br />
-    <select name="help_type">
-      <option value="adopt">Подарувати дім</option>
-      <option value="walk">Погуляти з тваринкою</option>
-      <option value="finance_guardian">Фінансова опіка</option>
-      <option value="info_guardian">Інформаційна опіка</option>
-      <option value="become_volunteer">Стати волонтером</option>
-      <option value="become_partner">Стати партнером</option></select
-    ><br /><br />
-
-    <label>Коментар:</label><br />
-    <textarea name="comment" rows="3" cols="40"></textarea><br /><br />
-
-    <label>
-      <input type="checkbox" required />
-      Ознайомлений з правилами опіки </label
-    ><br /><br />
-
-    <button type="submit">Надіслати</button>
+  <form method="post">
+    {{ volunteer_form.hidden_tag() }} {{ volunteer_form.help_type.label }} {{
+    volunteer_form.help_type() }}<br />
+    {{ volunteer_form.comment.label }}<br />{{ volunteer_form.comment(rows=3,
+    cols=40) }}<br />
+    {{ volunteer_form.submit() }}
   </form>
 </div>
 
 <!-- Таб: Зворотній зв’язок -->
 <div class="tab" id="contact" style="display: none">
   <h3>Зворотній зв’язок</h3>
-  <form method="post" action="{{ url_for('help_page') }}">
-    <input type="hidden" name="form_type" value="feedback" />
-
-    <input type="text" name="name" placeholder="Ваше ім’я" required /><br />
-    <input type="email" name="email" placeholder="Email" required /><br />
-    <textarea
-      name="message"
-      placeholder="Ваше повідомлення..."
-      rows="4"
-      cols="40"
-      required
-    ></textarea
-    ><br />
-    <button type="submit">Надіслати</button>
+  <form method="post">
+    {{ feedback_form.hidden_tag() }} {{ feedback_form.name.label }} {{
+    feedback_form.name() }}<br />
+    {{ feedback_form.email.label }} {{ feedback_form.email() }}<br />
+    {{ feedback_form.message.label }}<br />{{ feedback_form.message(rows=4,
+    cols=40) }}<br />
+    {{ feedback_form.submit() }}
   </form>
 </div>
 
@@ -96,7 +53,7 @@ block content %}
 
 <!-- Додаткові посилання -->
 <p>
-  <a href="{{ url_for('search_animals') }}">🔍 Переглянути тварин</a> |
+  <a href="{{ url_for('animals.search_animals') }}">🔍 Переглянути тварин</a> |
   <a href="#volunteer" onclick="showTab('volunteer')"
     >🐾 Усиновити / допомогти</a
   >

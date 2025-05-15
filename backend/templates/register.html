@@ -2,9 +2,10 @@
 content %}
 <h2>Реєстрація</h2>
 <form method="post">
-  <input type="text" name="username" placeholder="Ім’я" required /><br />
-  <input type="email" name="email" placeholder="Email" required /><br />
-  <input type="password" name="password" placeholder="Пароль" required /><br />
-  <button type="submit">Зареєструватись</button>
+  {{ form.hidden_tag() }} {{ form.username.label }} {{ form.username(size=32)
+  }}<br />
+  {{ form.email.label }} {{ form.email(size=32) }}<br />
+  {{ form.password.label }} {{ form.password(size=32) }}<br />
+  {{ form.submit() }}
 </form>
 {% endblock %}
