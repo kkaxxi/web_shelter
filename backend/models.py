@@ -35,11 +35,16 @@ class Donation(db.Model):
     
 
 class VolunteerRequest(db.Model):
+    __tablename__ = 'volunteer_request'
     id = db.Column(db.Integer, primary_key=True)
     help_type = db.Column(db.String(100), nullable=False)
-    comment = db.Column(db.Text)
+    comment = db.Column(db.Text, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    email = db.Column(db.String(150), nullable=True)
+    reply = db.Column(db.Text, nullable=True)  # 🆕 ДОДАЙ ЦЕ
+    user = db.relationship('User', backref='volunteer_requests')
+
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)

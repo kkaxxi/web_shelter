@@ -14,8 +14,10 @@ block content %}
 
 <h3>🐾 Стати волонтером</h3>
 <form method="post">
-  {{ volunteer_form.hidden_tag() }} {{ volunteer_form.help_type.label }} {{
-  volunteer_form.help_type() }}<br />
+  {% if not current_user.is_authenticated %} {{ volunteer_form.email.label }}<br />
+  {{ volunteer_form.email() }}<br />
+  {% endif %} {{ volunteer_form.hidden_tag() }} {{
+  volunteer_form.help_type.label }} {{ volunteer_form.help_type() }}<br />
   {{ volunteer_form.comment.label }}<br />
   {{ volunteer_form.comment(rows=3) }}<br />
   {{ volunteer_form.submit() }}

@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash, abort, request
 from flask_login import current_user, login_required
 from . import help_bp
-from models import db, Donation, Feedback, VolunteerRequest
+from models import db, Donation, Feedback, VolunteerRequest, User
 from forms import DonationForm, FeedbackForm, VolunteerForm, FeedbackReplyForm
 from sqlalchemy import or_
 
@@ -37,13 +37,15 @@ def handle_volunteer_form(form):
         volunteer = VolunteerRequest(
             help_type=form.help_type.data,
             comment=form.comment.data,
-            user_id=current_user.id if current_user.is_authenticated else None
+            user_id=current_user.id if current_user.is_authenticated else None,
+            email=current_user.email if current_user.is_authenticated else form.email.data  # 🆕
         )
         db.session.add(volunteer)
         db.session.commit()
         flash("Ваш запит волонтерства прийнято!")
         return True
     return False
+
 
 # 🏠 Головна сторінка допомоги
 @help_bp.route('/help', methods=['GET', 'POST'])
@@ -65,38 +67,66 @@ def help_page():
     )
 
 
-
-@help_bp.route('/help/feedbacks')
+@help_bp.route('/help/messages')
 @login_required
-def view_feedbacks():
+def view_all_messages():
     if current_user.role != 'admin':
         abort(403)
 
+    show = request.args.get('show', 'all')  # all / feedback / volunteer
     show_unanswered = request.args.get('unanswered') == '1'
     sort_order = request.args.get('sort', 'desc')
     page = request.args.get('page', 1, type=int)
-    per_page = 5  # показувати 5 фідбеків на сторінку
+    per_page = 5
 
-    query = Feedback.query
+    feedbacks, volunteers = [], []
+    feedback_pagination, volunteer_pagination = None, None
 
-    if show_unanswered:
-        query = query.filter(or_(Feedback.reply == None, Feedback.reply == ''))
+    if show in ['all', 'feedback']:
+        query = Feedback.query
+        if show_unanswered:
+            query = query.filter((Feedback.reply == None) | (Feedback.reply == ''))
+        query = query.order_by(Feedback.timestamp.asc() if sort_order == 'asc' else Feedback.timestamp.desc())
+        feedback_pagination = query.paginate(page=page, per_page=per_page)
+        feedbacks = feedback_pagination.items
 
-    if sort_order == 'asc':
-        query = query.order_by(Feedback.timestamp.asc())
-    else:
-        query = query.order_by(Feedback.timestamp.desc())
-
-    pagination = query.paginate(page=page, per_page=per_page)
-    feedbacks = pagination.items
+    if show in ['all', 'volunteer']:
+        query = VolunteerRequest.query
+        if show_unanswered:
+            query = query.filter((VolunteerRequest.reply == None) | (VolunteerRequest.reply == ''))
+        query = query.order_by(VolunteerRequest.timestamp.asc() if sort_order == 'asc' else VolunteerRequest.timestamp.desc())
+        volunteer_pagination = query.paginate(page=page, per_page=per_page)
+        volunteers = volunteer_pagination.items
 
     return render_template(
-        'feedback_list.html',
+        'admin_messages.html',
         feedbacks=feedbacks,
-        pagination=pagination,
-        show_unanswered=show_unanswered,
-        sort_order=sort_order
+        volunteers=volunteers,
+        feedback_pagination=feedback_pagination,
+        volunteer_pagination=volunteer_pagination,
+        sort_order=sort_order,
+        show=show,
+        show_unanswered=show_unanswered
     )
+
+
+@help_bp.route('/help/volunteer_reply/<int:volunteer_id>', methods=['GET', 'POST'])
+@login_required
+def reply_volunteer(volunteer_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    volunteer = VolunteerRequest.query.get_or_404(volunteer_id)
+    form = FeedbackReplyForm(reply=volunteer.reply)
+
+    if form.validate_on_submit():
+        volunteer.reply = form.reply.data
+        db.session.commit()
+        flash("✅ Відповідь збережено!")
+        return redirect(url_for('help.view_all_messages'))
+
+    return render_template("admin_reply.html", form=form, data=volunteer, mode="volunteer")
+
 
 
 # ✍️ Відповідь на конкретне повідомлення
@@ -113,15 +143,24 @@ def reply_feedback(feedback_id):
         feedback.reply = form.reply.data
         db.session.commit()
         flash("✅ Відповідь збережено!")
-        return redirect(url_for('help.view_feedbacks'))
+        return redirect(url_for('help.view_all_messages'))
 
-    return render_template("feedback_reply.html", feedback=feedback, form=form)
+    return render_template("admin_reply.html", form=form, data=feedback, mode="feedback")
+
+
 
 # 👀 Перегляд відповіді за email
 @help_bp.route('/help/feedback_status/<string:email>')
 def feedback_status(email):
     feedbacks = Feedback.query.filter_by(email=email).order_by(Feedback.timestamp.desc()).all()
-    return render_template('feedback_status.html', feedbacks=feedbacks, email=email)
+    volunteers = VolunteerRequest.query.join(User).filter(User.email == email).order_by(VolunteerRequest.timestamp.desc()).all()
+
+    return render_template(
+        'user_messages.html',
+        feedbacks=feedbacks,
+        volunteers=volunteers,
+        email=email
+    )
 
 # 📩 Обробка запиту з форми email
 @help_bp.route('/help/check_status', methods=['POST'])

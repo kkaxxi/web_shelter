@@ -1,0 +1,39 @@
+{% extends 'base.html' %} {% block title %}Відповідь адміністратора{% endblock
+%} {% block content %}
+
+<h2>
+  ✉️ Відповідь на {{ 'повідомлення' if mode == 'feedback' else 'заявку
+  волонтера' }}
+</h2>
+
+{% if mode == 'feedback' %}
+<p><strong>Ім’я:</strong> {{ data.name }}</p>
+{% if data.email %}
+<p><strong>Email:</strong> {{ data.email }}</p>
+{% endif %}
+<p><strong>Повідомлення:</strong><br />{{ data.message }}</p>
+{% elif mode == 'volunteer' %}
+<p><strong>Тип допомоги:</strong> {{ data.help_type }}</p>
+{% if data.comment %}
+<p><strong>Коментар:</strong><br />{{ data.comment }}</p>
+{% endif %} {% if data.user %}
+<p>
+  <strong>Користувач:</strong> {{ data.user.username }} | 📧
+  <a href="mailto:{{ data.user.email }}">{{ data.user.email }}</a>
+</p>
+{% endif %} {% endif %}
+
+<p><strong>Дата:</strong> {{ data.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+  <label>{{ form.reply.label }}</label><br />
+  {{ form.reply(rows=6, cols=60) }}<br /><br />
+  {{ form.submit() }}
+</form>
+
+<p>
+  <a href="{{ url_for('help.view_all_messages') }}">⬅ Назад до повідомлень</a>
+</p>
+
+{% endblock %}

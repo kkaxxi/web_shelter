@@ -17,7 +17,8 @@
         <a href="{{ url_for('animals.search_animals') }}">Пошук</a>
         {% if current_user.role == 'admin' %}
         <a href="{{ url_for('animals.add_animal') }}">Додати тварину</a>
-        <a href="{{ url_for('help.view_feedbacks') }}">📬 Повідомлення</a>
+        <a href="{{ url_for('help.view_all_messages') }}">📬 Повідомлення</a>
+
         {% endif %}
         <a href="{{ url_for('auth.logout') }}">Вийти</a>
         {% else %}

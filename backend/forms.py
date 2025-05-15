@@ -42,6 +42,7 @@ class VolunteerForm(FlaskForm):
         ],
         validators=[DataRequired()]
     )
+    email = StringField('Email', validators=[Optional(), Email()])
     comment = TextAreaField('Коментар (необов’язково)', validators=[Optional()])
     submit = SubmitField('Надіслати')
 
