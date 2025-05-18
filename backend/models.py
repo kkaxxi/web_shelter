@@ -20,6 +20,9 @@ class Animal(db.Model):
     description = db.Column(db.Text)
     status = db.Column(db.String(50), default='в притулку')  # або "усиновлено"
     photo_url = db.Column(db.String(300))  # Посилання на фото
+    adoption_contract = db.Column(db.String(300), nullable=True)  # шлях до PDF
+
+
 
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)

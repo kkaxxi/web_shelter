@@ -1,4 +1,5 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm 
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import (
     StringField, PasswordField, SubmitField, IntegerField,
     TextAreaField, SelectField, BooleanField, FileField
@@ -80,3 +81,11 @@ class MonthlyReportForm(FlaskForm):
     adopted_animals = IntegerField('Усиновлено тварин')
     new_animals = IntegerField('Нові тварини')
     submit = SubmitField('Додати звіт')
+
+
+class AdoptionContractForm(FlaskForm):
+    contract = FileField('Договір (PDF)', validators=[
+        FileAllowed(['pdf'], 'Дозволено тільки PDF-файли'),
+        DataRequired()
+    ])
+    submit = SubmitField('Завантажити')

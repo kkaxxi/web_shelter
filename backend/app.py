@@ -24,6 +24,10 @@ REPORTS_FOLDER = os.path.join(basedir, 'static', 'reports')
 app.config['REPORTS_FOLDER'] = REPORTS_FOLDER
 os.makedirs(REPORTS_FOLDER, exist_ok=True)
 
+CONTRACTS_FOLDER = os.path.join(basedir, 'static', 'contracts')
+app.config['CONTRACTS_FOLDER'] = CONTRACTS_FOLDER
+os.makedirs(CONTRACTS_FOLDER, exist_ok=True)
+
 
 db.init_app(app)
 

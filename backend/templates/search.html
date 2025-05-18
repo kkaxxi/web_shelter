@@ -45,9 +45,13 @@ content %}
 </form>
 
 <hr />
+<a href="{{ url_for('animals.adoption_rules') }}" class="btn"
+  >📄 Правила усиновлення</a
+>
 
 <div class="card-container">
-  {% for animal in animals %}
+  {% for animal in animals %} {% if request.args.get('status') == 'усиновлено'
+  or animal.status != 'усиновлено' %}
   <div class="card">
     <a href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}">
       <img src="{{ animal.photo_url }}" alt="{{ animal.name }}" />
@@ -78,8 +82,14 @@ content %}
         🗑️
       </button>
     </form>
-    {% endif %}
+    <br />
+    {% if animal.status != 'усиновлено' %}
+    <a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}">
+      📄 Завантажити договір
+    </a>
+
+    {% endif %} {% endif %}
   </div>
-  {% endfor %}
+  {% endif %} {% endfor %}
 </div>
 {% endblock %}

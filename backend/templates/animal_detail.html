@@ -8,4 +8,9 @@ block content %}
 <p><strong>Розмір:</strong> {{ animal.size }}</p>
 <p><strong>Статус:</strong> {{ animal.status }}</p>
 <p><strong>Опис:</strong><br />{{ animal.description }}</p>
-{% endblock %}
+{% endblock %} {% if current_user.is_authenticated and current_user.role ==
+'admin' and animal.status != 'усиновлено' %}
+<a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}"
+  >📄 Завантажити договір</a
+>
+{% endif %}

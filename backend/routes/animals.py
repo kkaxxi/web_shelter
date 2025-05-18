@@ -5,7 +5,8 @@ import os, uuid
 from PIL import Image
 from . import animals_bp
 from models import db, Animal, Favorite
-from forms import AnimalForm, DummyForm
+from forms import AnimalForm, DummyForm, AdoptionContractForm
+from datetime import datetime
 
 @animals_bp.route('/search')
 def search_animals():
@@ -156,3 +157,36 @@ def animal_detail(animal_id):
     animal = Animal.query.get_or_404(animal_id)
     return render_template('animal_detail.html', animal=animal)
 
+
+@animals_bp.route('/adoption-rules')
+def adoption_rules():
+    return render_template('adoption_rules.html')
+
+
+@animals_bp.route('/animals/<int:animal_id>/upload_contract', methods=['GET', 'POST'])
+@login_required
+def upload_contract(animal_id):
+    if current_user.role != 'admin':
+        abort(403)
+
+    animal = Animal.query.get_or_404(animal_id)
+    form = AdoptionContractForm()
+
+    if form.validate_on_submit():
+        file = form.contract.data
+        filename = f"{animal.name.lower()}_{datetime.now().year}.pdf".replace(" ", "_")
+        path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'contracts')
+        os.makedirs(path, exist_ok=True)
+        full_path = os.path.join(path, filename)
+
+        file.save(full_path)
+
+        # зберігаємо у БД
+        animal.adoption_contract = f"contracts/{filename}"
+        animal.status = 'усиновлено'
+        db.session.commit()
+
+        flash('✅ Договір збережено. Статус оновлено!')
+        return redirect(url_for('animals.search_animals'))
+
+    return render_template('upload_contract.html', form=form, animal=animal)
