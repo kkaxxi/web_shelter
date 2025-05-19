@@ -199,18 +199,19 @@ def adoption_rules():
 @animals_bp.route('/adopt/<int:animal_id>', methods=['GET', 'POST'])
 @login_required
 def adopt_animal(animal_id):
+    # Заборонити доступ адміну
+    if current_user.role == 'admin':
+        flash("❌ Адміністратор не може подавати заявки на усиновлення.")
+        return redirect(url_for('animals.animal_detail', animal_id=animal_id))
+
     animal = Animal.query.get_or_404(animal_id)
     form = AdoptionRequestForm()
 
     if form.validate_on_submit():
-        from models import InterviewSlot
         slot = InterviewSlot.query.get(form.preferred_slot_id.data)
-        slot.is_taken = True
-
-
         if not slot or slot.is_taken:
-            flash("❌ Обраний слот більше недоступний. Спробуйте інший.")
-            return redirect(url_for('animals.adopt_animal', animal_id=animal.id))
+            flash("❌ Обраний слот вже зайнятий або не існує.")
+            return redirect(url_for('animals.adopt_animal', animal_id=animal_id))
 
         slot.is_taken = True
         new_request = AdoptionRequest(
@@ -221,11 +222,11 @@ def adopt_animal(animal_id):
         )
         db.session.add(new_request)
         db.session.commit()
-
         flash("✅ Заявку на усиновлення надіслано. Очікуйте відповідь менеджера.")
         return redirect(url_for('animals.animal_detail', animal_id=animal.id))
 
     return render_template('adoption_form.html', form=form, animal=animal)
+
 
 
 @animals_bp.route('/admin/add-slot', methods=['GET', 'POST'])
