@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block title %}Адмін: Заявки та повідомлення{%
+endblock %} {% block content %}
+<h2>📂 Адміністративна панель</h2>
+{% set mode = mode or 'adoption' %} {% if mode == 'adoption' %}
+<h3>🐾 Заявки на усиновлення</h3>
+<form method="get">
+  {{ form.hidden_tag() }} Ім’я користувача: {{ form.user_name(size=20) }}
+  Тварина: {{ form.animal_name(size=20) }} Статус: {{ form.status() }} {{
+  form.submit(class="btn") }}
+</form>
+<hr />
+{% for r in requests %}
+<div class="msg-card">
+  <p>
+    <strong>Тварина:</strong>
+    <a href="{{ url_for('animals.animal_detail', animal_id=r.animal.id) }}"
+      >{{ r.animal.name }}</a
+    >
+  </p>
+  <p><strong>Користувач:</strong> {{ r.user.username }} ({{ r.user.email }})</p>
+  <p>
+    <strong>Дата заявки:</strong> {{ r.timestamp.strftime('%d.%m.%Y %H:%M') }}
+  </p>
+  <p><strong>Статус:</strong> {{ r.interview_status }}</p>
+  <p>
+    <a href="{{ url_for('animals.manage_adoption_request', req_id=r.id) }}"
+      >✍️ Переглянути/відповісти</a
+    >
+  </p>
+</div>
+{% else %}
+<p><em>Немає заявок</em></p>
+{% endfor %} {% elif mode == 'volunteer' %}
+<h3>🤝 Волонтерські запити</h3>
+{% for v in requests %}
+<div class="msg-card">
+  <p><strong>Email:</strong> {{ v.email }}</p>
+  <p><strong>Тип допомоги:</strong> {{ v.help_type }}</p>
+  <p><strong>Коментар:</strong> {{ v.comment or '—' }}</p>
+  <p>
+    <a href="{{ url_for('help.reply_volunteer', volunteer_id=v.id) }}"
+      >✍️ Відповісти</a
+    >
+  </p>
+</div>
+{% else %}
+<p><em>Немає волонтерських запитів</em></p>
+{% endfor %} {% elif mode == 'feedback' %}
+<h3>📨 Повідомлення зворотного зв’язку</h3>
+{% for f in requests %}
+<div class="msg-card">
+  <p><strong>Email:</strong> {{ f.email }}</p>
+  <p><strong>Повідомлення:</strong> {{ f.message }}</p>
+  <p>
+    <a href="{{ url_for('help.reply_feedback', feedback_id=f.id) }}"
+      >✍️ Відповісти</a
+    >
+  </p>
+</div>
+{% else %}
+<p><em>Немає повідомлень</em></p>
+{% endfor %} {% endif %} {% endblock %}

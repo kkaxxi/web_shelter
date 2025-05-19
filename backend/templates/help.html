@@ -34,9 +34,4 @@ block content %}
   {{ feedback_form.submit() }}
 </form>
 
-<h4>🔍 Перевірити відповідь</h4>
-<form action="{{ url_for('help.feedback_status_redirect') }}" method="post">
-  <input type="email" name="email" placeholder="Ваш email" required />
-  <button type="submit">Перевірити</button>
-</form>
 {% endblock %}

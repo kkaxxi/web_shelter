@@ -76,38 +76,28 @@ def view_all_messages():
     show = request.args.get('show', 'all')  # all / feedback / volunteer
     show_unanswered = request.args.get('unanswered') == '1'
     sort_order = request.args.get('sort', 'desc')
-    page = request.args.get('page', 1, type=int)
-    per_page = 5
 
-    feedbacks, volunteers = [], []
-    feedback_pagination, volunteer_pagination = None, None
-
-    if show in ['all', 'feedback']:
-        query = Feedback.query
-        if show_unanswered:
-            query = query.filter((Feedback.reply == None) | (Feedback.reply == ''))
-        query = query.order_by(Feedback.timestamp.asc() if sort_order == 'asc' else Feedback.timestamp.desc())
-        feedback_pagination = query.paginate(page=page, per_page=per_page)
-        feedbacks = feedback_pagination.items
-
-    if show in ['all', 'volunteer']:
+    if show == 'volunteer':
         query = VolunteerRequest.query
         if show_unanswered:
             query = query.filter((VolunteerRequest.reply == None) | (VolunteerRequest.reply == ''))
         query = query.order_by(VolunteerRequest.timestamp.asc() if sort_order == 'asc' else VolunteerRequest.timestamp.desc())
-        volunteer_pagination = query.paginate(page=page, per_page=per_page)
-        volunteers = volunteer_pagination.items
+        requests = query.all()
+        return render_template('admin_list.html', requests=requests, mode='volunteer')
 
-    return render_template(
-        'admin_messages.html',
-        feedbacks=feedbacks,
-        volunteers=volunteers,
-        feedback_pagination=feedback_pagination,
-        volunteer_pagination=volunteer_pagination,
-        sort_order=sort_order,
-        show=show,
-        show_unanswered=show_unanswered
-    )
+    elif show == 'feedback':
+        query = Feedback.query
+        if show_unanswered:
+            query = query.filter((Feedback.reply == None) | (Feedback.reply == ''))
+        query = query.order_by(Feedback.timestamp.asc() if sort_order == 'asc' else Feedback.timestamp.desc())
+        requests = query.all()
+        return render_template('admin_list.html', requests=requests, mode='feedback')
+
+    else:
+        # show == 'all': можеш залишити старий admin_messages.html або зробити два окремі запити
+        flash("⚠️ Поки що перегляд одразу всіх типів повідомлень не підтримується тут.")
+        return redirect(url_for('help.help_page'))
+
 
 
 @help_bp.route('/help/volunteer_reply/<int:volunteer_id>', methods=['GET', 'POST'])

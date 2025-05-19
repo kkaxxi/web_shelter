@@ -1,0 +1,10 @@
+<form method="post">
+  {{ form.hidden_tag() }}
+  <label>{{ form.preferred_datetime.label }}</label><br />
+  {{ form.preferred_datetime() }}<br /><br />
+
+  <label>{{ form.comment.label }}</label><br />
+  {{ form.comment(rows=4, cols=60) }}<br /><br />
+
+  {{ form.submit() }}
+</form>

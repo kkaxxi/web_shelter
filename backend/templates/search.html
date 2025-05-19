@@ -2,7 +2,9 @@
 content %}
 <h2>Пошук тварин</h2>
 
+{% if current_user.is_authenticated %}
 <a href="{{ url_for('animals.favorites') }}" class="fav-link">❤️ Улюбленці</a>
+{% endif %}
 
 <form method="get">
   <label>Категорія:</label>
@@ -58,17 +60,29 @@ content %}
       <h4>{{ animal.name }}</h4>
     </a>
 
-    {% if current_user.is_authenticated %}
     <form
       method="post"
       action="{{ url_for('animals.toggle_favorite', animal_id=animal.id) }}"
     >
-      <button type="submit" class="heart-btn">
-        {% if animal.id in user_fav_ids %} ❤️ {% else %} 🤍 {% endif %}
+      <button
+        type="submit"
+        class="heart-btn"
+        {%
+        if
+        not
+        current_user.is_authenticated
+        %}
+        onclick="alert('❌ Щоб додати улюбленця — увійдіть або зареєструйтесь.'); return false;"
+        {%
+        endif
+        %}
+      >
+        {% if current_user.is_authenticated and animal.id in user_fav_ids %} ❤️
+        {% else %} 🤍 {% endif %}
       </button>
     </form>
-    {% endif %} {% if current_user.is_authenticated and current_user.role ==
-    'admin' %}
+
+    {% if current_user.is_authenticated and current_user.role == 'admin' %}
     <a href="{{ url_for('animals.edit_animal', animal_id=animal.id) }}"
       >✏️ Редагувати</a
     >
@@ -87,7 +101,6 @@ content %}
     <a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}">
       📄 Завантажити договір
     </a>
-
     {% endif %} {% endif %}
   </div>
   {% endif %} {% endfor %}

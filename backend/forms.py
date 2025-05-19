@@ -5,6 +5,7 @@ from wtforms import (
     TextAreaField, SelectField, BooleanField, FileField
 )
 from wtforms.validators import DataRequired, Email, NumberRange, Optional
+from datetime import datetime, timedelta
 
 class RegisterForm(FlaskForm):
     username = StringField('Ім’я', validators=[DataRequired()])
@@ -89,3 +90,59 @@ class AdoptionContractForm(FlaskForm):
         DataRequired()
     ])
     submit = SubmitField('Завантажити')
+
+
+class AdoptionRequestForm(FlaskForm):
+    preferred_datetime = SelectField("Оберіть дату і час для інтерв’ю", choices=[], validators=[DataRequired()])
+    comment = TextAreaField("Коментар (необов'язково)", validators=[Optional()])
+    submit = SubmitField("Надіслати заявку")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        now = datetime.now()
+        slots = []
+
+        for i in range(5):
+            day = now + timedelta(days=i)
+            for hour in range(10, 15):
+                dt = datetime(day.year, day.month, day.day, hour, 0)
+                formatted = dt.strftime("%Y-%m-%d %H:%M")
+                slots.append((formatted, formatted))
+
+        self.preferred_datetime.choices = slots
+
+class AdminAdoptionResponseForm(FlaskForm):
+    interview_status = SelectField(
+        "Статус заявки",
+        choices=[
+            ("approved", "✅ Схвалено"),
+            ("rejected", "❌ Відхилено")
+        ],
+        validators=[DataRequired()]
+    )
+
+    reply = TextAreaField("Відповідь користувачу", validators=[DataRequired()])
+    submit = SubmitField("💬 Надіслати відповідь")
+
+class AdoptionRequestFilterForm(FlaskForm):
+    user_name = StringField("Ім’я користувача", validators=[Optional()])
+    animal_name = StringField("Ім’я тварини", validators=[Optional()])
+    status = SelectField('Статус', choices=[
+    ('', 'Усі'),
+    ('pending', 'Очікує'),
+    ('approved', 'Схвалено'),
+    ('rejected', 'Відхилено')
+    ], default='')
+
+    submit = SubmitField("🔍 Фільтрувати")
+
+
+class MessageFilterForm(FlaskForm):
+    section = SelectField("Фільтр", choices=[
+        ("all", "Усі"),
+        ("adoption", "Заявки на усиновлення"),
+        ("volunteer", "Волонтерство"),
+        ("feedback", "Зворотний зв’язок")
+    ])
+    submit = SubmitField("🔍 Показати")

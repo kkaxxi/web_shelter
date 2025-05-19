@@ -83,3 +83,20 @@ class MonthlyReport(db.Model):
     new_animals = db.Column(db.Integer, default=0)
     pdf_url = db.Column(db.String(300))
 
+class AdoptionRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    animal_id = db.Column(db.Integer, db.ForeignKey('animal.id'), nullable=False)
+    preferred_datetime = db.Column(db.DateTime, nullable=True)
+
+    comment = db.Column(db.Text)
+    interview_status = db.Column(db.String(20), default='pending')  # 'pending', 'approved', 'rejected'
+    appointment_datetime = db.Column(db.String(100), nullable=True)  # реальна зустріч
+    video_link = db.Column(db.String(300), nullable=True)  # (опційно — посилання на Google Meet)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='adoption_requests')
+    animal = db.relationship('Animal', backref='adoption_requests')
+
+    reply = db.Column(db.Text, nullable=True)
+

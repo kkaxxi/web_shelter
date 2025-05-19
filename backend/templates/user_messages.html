@@ -1,37 +1,68 @@
-{% extends 'base.html' %} {% block title %}Ваші повідомлення{% endblock %} {%
+{% extends "base.html" %} {% block title %}Мої повідомлення{% endblock %} {%
 block content %}
-<h2>📨 Відповіді для {{ email }}</h2>
+<h2>📬 Мої повідомлення</h2>
 
-{% if feedbacks %}
-<h3>📬 Зворотній зв’язок</h3>
-{% for f in feedbacks %}
+{% set section = section or 'all' %} {% set form = form or None %} {% set
+adoption_msgs = adoption_msgs or [] %} {% set volunteer_msgs = volunteer_msgs or
+[] %} {% set feedback_msgs = feedback_msgs or [] %} {% if form %}
+<form method="get">
+  {{ form.hidden_tag() }}
+  <label>Фільтр:</label>
+  {{ form.section(class="form-control", style="width: 250px;
+  display:inline-block;") }} {{ form.submit(class="btn") }}
+</form>
+<hr />
+{% endif %} {% if section in ['all', 'adoption'] %}
+<h3>🐾 Заявки на усиновлення</h3>
+{% if adoption_msgs %} {% for msg in adoption_msgs %}
 <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px">
-  <p><strong>Ваше повідомлення:</strong><br />{{ f.message }}</p>
-  <p><strong>Дата:</strong> {{ f.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
-  {% if f.reply %}
-  <p><strong>✍️ Відповідь:</strong><br />{{ f.reply }}</p>
-  {% else %}
-  <p><em>Очікує відповіді...</em></p>
+  <p><strong>Тварина:</strong> {{ msg.animal.name }}</p>
+  <p>
+    <strong>Бажаний час інтерв’ю:</strong> {{
+    msg.preferred_datetime.strftime('%d.%m.%Y %H:%M') if msg.preferred_datetime
+    else '—' }}
+  </p>
+  {% if msg.comment %}
+  <p><strong>Коментар:</strong><br />{{ msg.comment }}</p>
   {% endif %}
+  <p>
+    <strong>Дата подання:</strong> {{ msg.timestamp.strftime('%d.%m.%Y %H:%M')
+    }}
+  </p>
+  <p>
+    <strong>✍️ Відповідь:</strong><br />{{ msg.reply or '— Очікує відповіді' }}
+  </p>
 </div>
-{% endfor %} {% endif %} {% if volunteers %}
-<h3>🐾 Заявки на волонтерство</h3>
-{% for v in volunteers %}
+{% endfor %} {% else %}
+<p><em>Немає відповідей</em></p>
+{% endif %} {% endif %} {% if section in ['all', 'volunteer'] %}
+<h3>🤝 Волонтерство</h3>
+{% if volunteer_msgs %} {% for v in volunteer_msgs %}
 <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px">
   <p><strong>Тип допомоги:</strong> {{ v.help_type }}</p>
   {% if v.comment %}
   <p><strong>Коментар:</strong><br />{{ v.comment }}</p>
   {% endif %}
   <p><strong>Дата:</strong> {{ v.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
-  {% if v.reply %}
-  <p><strong>✍️ Відповідь:</strong><br />{{ v.reply }}</p>
-  {% else %}
-  <p><em>Очікує відповіді...</em></p>
-  {% endif %}
+  <p>
+    <strong>✍️ Відповідь:</strong><br />{{ v.reply or '— Очікує відповіді' }}
+  </p>
 </div>
-{% endfor %} {% endif %} {% if not feedbacks and not volunteers %}
-<p>Нічого не знайдено для цієї адреси.</p>
-{% endif %}
+{% endfor %} {% else %}
+<p><em>Немає відповідей</em></p>
+{% endif %} {% endif %} {% if section in ['all', 'feedback'] %}
+<h3>📨 Форма зворотного зв’язку</h3>
+{% if feedback_msgs %} {% for f in feedback_msgs %}
+<div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px">
+  <p><strong>Твоє повідомлення:</strong><br />{{ f.message }}</p>
+  <p><strong>Дата:</strong> {{ f.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
+  <p>
+    <strong>✍️ Відповідь:</strong><br />{{ f.reply or '— Очікує відповіді' }}
+  </p>
+</div>
+{% endfor %} {% else %}
+<p><em>Немає відповідей</em></p>
+{% endif %} {% endif %}
 
 <p><a href="{{ url_for('help.help_page') }}">⬅ Назад</a></p>
 {% endblock %}

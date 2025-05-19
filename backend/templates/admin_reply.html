@@ -1,39 +1,38 @@
-{% extends 'base.html' %} {% block title %}Відповідь адміністратора{% endblock
-%} {% block content %}
-
+{% extends "base.html" %} {% block title %} Відповідь – {{ mode|capitalize }} {%
+endblock %} {% block content %}
 <h2>
-  ✉️ Відповідь на {{ 'повідомлення' if mode == 'feedback' else 'заявку
-  волонтера' }}
+  ✍️ Відповідь на {% if mode == 'adoption' %} заявку на усиновлення {% elif mode
+  == 'volunteer' %} волонтерську заявку {% elif mode == 'feedback' %}
+  повідомлення користувача {% endif %}
 </h2>
 
-{% if mode == 'feedback' %}
-<p><strong>Ім’я:</strong> {{ data.name }}</p>
-{% if data.email %}
-<p><strong>Email:</strong> {{ data.email }}</p>
-{% endif %}
-<p><strong>Повідомлення:</strong><br />{{ data.message }}</p>
-{% elif mode == 'volunteer' %}
-<p><strong>Тип допомоги:</strong> {{ data.help_type }}</p>
-{% if data.comment %}
-<p><strong>Коментар:</strong><br />{{ data.comment }}</p>
-{% endif %} {% if data.user %}
+{% if mode == 'adoption' %}
+<p><strong>🐾 Тварина:</strong> {{ data.animal.name }}</p>
 <p>
-  <strong>Користувач:</strong> {{ data.user.username }} | 📧
-  <a href="mailto:{{ data.user.email }}">{{ data.user.email }}</a>
+  <strong>👤 Користувач:</strong> {{ data.user.username }} | {{ data.user.email
+  }}
 </p>
-{% endif %} {% endif %}
-
-<p><strong>Дата:</strong> {{ data.timestamp.strftime('%d.%m.%Y %H:%M') }}</p>
+<p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
+{% elif mode == 'volunteer' %}
+<p><strong>👤 Email:</strong> {{ data.email }}</p>
+<p><strong>Тип допомоги:</strong> {{ data.help_type }}</p>
+<p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
+{% elif mode == 'feedback' %}
+<p><strong>👤 Email:</strong> {{ data.email }}</p>
+<p><strong>Повідомлення:</strong><br />{{ data.message }}</p>
+{% endif %}
 
 <form method="post">
-  {{ form.hidden_tag() }}
+  {{ form.hidden_tag() }} {% if form.interview_status %}
+  <label>{{ form.interview_status.label }}</label><br />
+  {{ form.interview_status() }}<br /><br />
+  {% endif %}
+
   <label>{{ form.reply.label }}</label><br />
   {{ form.reply(rows=6, cols=60) }}<br /><br />
-  {{ form.submit() }}
+
+  {{ form.submit(class="btn") }}
 </form>
 
-<p>
-  <a href="{{ url_for('help.view_all_messages') }}">⬅ Назад до повідомлень</a>
-</p>
-
+<p><a href="{{ request.referrer or url_for('help.help_page') }}">⬅ Назад</a></p>
 {% endblock %}

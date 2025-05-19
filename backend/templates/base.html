@@ -13,21 +13,24 @@
       <h1>Притулок тварин</h1>
       <nav>
         <a href="{{ url_for('index') }}">Головна</a>
-        {% if current_user.is_authenticated %}
         <a href="{{ url_for('animals.search_animals') }}">Пошук</a>
-        {% if current_user.role == 'admin' %}
-        <a href="{{ url_for('animals.add_animal') }}">Додати тварину</a>
-        <a href="{{ url_for('help.view_all_messages') }}">📬 Повідомлення</a>
+        <a href="{{ url_for('help.help_page') }}">Як допомогти</a>
+        <a href="{{ url_for('reports.reports_page') }}">Звіти</a>
 
+        {% if current_user.is_authenticated %} {% if current_user.role ==
+        'admin' %}
+        <a href="{{ url_for('animals.add_animal') }}">➕ Додати тварину</a>
+        <a href="{{ url_for('animals.view_adoption_requests') }}">📄 Заявки</a>
+        <a href="{{ url_for('help.view_all_messages') }}">📬 Повідомлення</a>
+        {% else %}
+        <a href="{{ url_for('animals.view_messages') }}">📩 Мої повідомлення</a>
         {% endif %}
+
         <a href="{{ url_for('auth.logout') }}">Вийти</a>
         {% else %}
         <a href="{{ url_for('auth.login') }}">Увійти</a>
         <a href="{{ url_for('auth.register') }}">Реєстрація</a>
-
         {% endif %}
-        <a href="{{ url_for('help.help_page') }}">Як допомогти</a>
-        <a href="{{ url_for('reports.reports_page') }}">Звіти</a>
       </nav>
     </header>
 
