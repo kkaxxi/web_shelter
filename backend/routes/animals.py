@@ -6,8 +6,8 @@ from PIL import Image
 from datetime import datetime, timedelta
 
 from . import animals_bp
-from models import db, Animal, Favorite, AdoptionRequest, VolunteerRequest, Feedback, User
-from forms import AnimalForm, DummyForm, AdoptionContractForm, AdoptionRequestForm, AdminAdoptionResponseForm, MessageFilterForm, AdoptionRequestFilterForm
+from models import db, Animal, Favorite, AdoptionRequest, VolunteerRequest, Feedback, User, InterviewSlot
+from forms import AnimalForm, DummyForm, AdoptionContractForm, AdoptionRequestForm, AdminAdoptionResponseForm, MessageFilterForm, AdoptionRequestFilterForm, InterviewSlotForm
 from utils import send_email
 
 # --- Пошук тварин ---
@@ -205,6 +205,8 @@ def adopt_animal(animal_id):
     if form.validate_on_submit():
         from models import InterviewSlot
         slot = InterviewSlot.query.get(form.preferred_slot_id.data)
+        slot.is_taken = True
+
 
         if not slot or slot.is_taken:
             flash("❌ Обраний слот більше недоступний. Спробуйте інший.")
@@ -225,30 +227,27 @@ def adopt_animal(animal_id):
 
     return render_template('adoption_form.html', form=form, animal=animal)
 
+
 @animals_bp.route('/admin/add-slot', methods=['GET', 'POST'])
 @login_required
 def add_interview_slot():
     if current_user.role != 'admin':
         abort(403)
 
-    if request.method == 'POST':
-        dt_str = request.form.get('slot_datetime')
-        try:
-            dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
-            from models import InterviewSlot
-            existing = InterviewSlot.query.filter_by(datetime=dt).first()
-            if not existing:
-                slot = InterviewSlot(datetime=dt)
-                db.session.add(slot)
-                db.session.commit()
-                flash("Слот додано!")
-            else:
-                flash("Такий слот уже існує.")
-        except:
-            flash("Невірний формат дати.")
-        return redirect(url_for('animals.add_interview_slot'))
+    form = InterviewSlotForm()
 
-    return render_template('add_slot.html')
+    if form.validate_on_submit():
+        dt = datetime.combine(form.date.data, form.time.data)
+        new_slot = InterviewSlot(datetime=dt)
+        db.session.add(new_slot)
+        db.session.commit()
+        flash("✅ Слот додано!")
+        form.date.data = None  # очищаємо поля після сабміту
+        form.time.data = None
+
+    return render_template("add_slot.html", form=form)
+
+
 
 
 # --- Перегляд усіх заявок (адмін) ---

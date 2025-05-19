@@ -2,7 +2,9 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import (
     StringField, PasswordField, SubmitField, IntegerField,
-    TextAreaField, SelectField, BooleanField, FileField
+    TextAreaField, SelectField, BooleanField, FileField,
+    DateField, TimeField, SubmitField
+
 )
 from wtforms.validators import DataRequired, Email, NumberRange, Optional
 from datetime import datetime, timedelta
@@ -143,3 +145,9 @@ class MessageFilterForm(FlaskForm):
         ("feedback", "Зворотний зв’язок")
     ])
     submit = SubmitField("🔍 Показати")
+
+
+class InterviewSlotForm(FlaskForm):
+    date = DateField("Дата", format="%Y-%m-%d", validators=[DataRequired()])
+    time = TimeField("Час", format="%H:%M", validators=[DataRequired()])
+    submit = SubmitField("Додати слот")
