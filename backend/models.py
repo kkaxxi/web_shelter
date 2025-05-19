@@ -100,3 +100,7 @@ class AdoptionRequest(db.Model):
 
     reply = db.Column(db.Text, nullable=True)
 
+class InterviewSlot(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    datetime = db.Column(db.DateTime, unique=True, nullable=False)
+    is_taken = db.Column(db.Boolean, default=False)

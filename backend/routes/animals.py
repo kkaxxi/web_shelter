@@ -203,19 +203,53 @@ def adopt_animal(animal_id):
     form = AdoptionRequestForm()
 
     if form.validate_on_submit():
-        interview_dt = datetime.strptime(form.preferred_datetime.data, "%Y-%m-%d %H:%M")
+        from models import InterviewSlot
+        slot = InterviewSlot.query.get(form.preferred_slot_id.data)
+
+        if not slot or slot.is_taken:
+            flash("❌ Обраний слот більше недоступний. Спробуйте інший.")
+            return redirect(url_for('animals.adopt_animal', animal_id=animal.id))
+
+        slot.is_taken = True
         new_request = AdoptionRequest(
             user_id=current_user.id,
             animal_id=animal.id,
-            preferred_datetime=interview_dt,
+            preferred_datetime=slot.datetime,
             comment=form.comment.data
         )
         db.session.add(new_request)
         db.session.commit()
+
         flash("✅ Заявку на усиновлення надіслано. Очікуйте відповідь менеджера.")
         return redirect(url_for('animals.animal_detail', animal_id=animal.id))
 
     return render_template('adoption_form.html', form=form, animal=animal)
+
+@animals_bp.route('/admin/add-slot', methods=['GET', 'POST'])
+@login_required
+def add_interview_slot():
+    if current_user.role != 'admin':
+        abort(403)
+
+    if request.method == 'POST':
+        dt_str = request.form.get('slot_datetime')
+        try:
+            dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+            from models import InterviewSlot
+            existing = InterviewSlot.query.filter_by(datetime=dt).first()
+            if not existing:
+                slot = InterviewSlot(datetime=dt)
+                db.session.add(slot)
+                db.session.commit()
+                flash("Слот додано!")
+            else:
+                flash("Такий слот уже існує.")
+        except:
+            flash("Невірний формат дати.")
+        return redirect(url_for('animals.add_interview_slot'))
+
+    return render_template('add_slot.html')
+
 
 # --- Перегляд усіх заявок (адмін) ---
 @animals_bp.route('/admin/adoption-requests', methods=['GET'])

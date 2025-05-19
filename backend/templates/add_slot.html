@@ -1,0 +1,10 @@
+{% extends 'base.html' %} {% block title %}Додати слот інтерв’ю{% endblock %} {%
+block content %}
+<h2>📅 Додати слот інтерв’ю</h2>
+<form method="post">
+  <label>Дата і час (YYYY-MM-DD HH:MM):</label>
+  <input type="text" name="slot_datetime" required />
+  <button type="submit">Додати</button>
+</form>
+<p><a href="{{ url_for('index') }}">⬅ Назад</a></p>
+{% endblock %}

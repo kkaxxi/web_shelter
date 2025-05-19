@@ -1,10 +1,22 @@
+{% extends 'base.html' %} {% block title %}Усиновлення тваринки{% endblock %} {%
+block content %}
+<h2>🐾 Усиновити {{ animal.name }}</h2>
+
 <form method="post">
   {{ form.hidden_tag() }}
-  <label>{{ form.preferred_datetime.label }}</label><br />
-  {{ form.preferred_datetime() }}<br /><br />
+
+  <label>{{ form.preferred_slot_id.label }}</label><br />
+  {{ form.preferred_slot_id() }}<br /><br />
 
   <label>{{ form.comment.label }}</label><br />
-  {{ form.comment(rows=4, cols=60) }}<br /><br />
+  {{ form.comment(rows=4) }}<br /><br />
 
-  {{ form.submit() }}
+  {{ form.submit(class="btn") }}
 </form>
+
+<p>
+  <a href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}"
+    >⬅ Назад</a
+  >
+</p>
+{% endblock %}

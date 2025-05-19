@@ -22,6 +22,10 @@
         <a href="{{ url_for('animals.add_animal') }}">➕ Додати тварину</a>
         <a href="{{ url_for('animals.view_adoption_requests') }}">📄 Заявки</a>
         <a href="{{ url_for('help.view_all_messages') }}">📬 Повідомлення</a>
+        <a href="{{ url_for('animals.add_interview_slot') }}"
+          >➕ Слоти інтерв’ю</a
+        >
+
         {% else %}
         <a href="{{ url_for('animals.view_messages') }}">📩 Мої повідомлення</a>
         {% endif %}

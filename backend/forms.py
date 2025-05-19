@@ -93,24 +93,21 @@ class AdoptionContractForm(FlaskForm):
 
 
 class AdoptionRequestForm(FlaskForm):
-    preferred_datetime = SelectField("Оберіть дату і час для інтерв’ю", choices=[], validators=[DataRequired()])
+    preferred_slot_id = SelectField(
+        "Оберіть слот інтерв’ю",
+        coerce=int,
+        validators=[DataRequired()]
+    )
     comment = TextAreaField("Коментар (необов'язково)", validators=[Optional()])
     submit = SubmitField("Надіслати заявку")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        now = datetime.now()
-        slots = []
-
-        for i in range(5):
-            day = now + timedelta(days=i)
-            for hour in range(10, 15):
-                dt = datetime(day.year, day.month, day.day, hour, 0)
-                formatted = dt.strftime("%Y-%m-%d %H:%M")
-                slots.append((formatted, formatted))
-
-        self.preferred_datetime.choices = slots
+        from models import InterviewSlot
+        self.preferred_slot_id.choices = [
+            (slot.id, slot.datetime.strftime("%d.%m.%Y %H:%M"))
+            for slot in InterviewSlot.query.filter_by(is_taken=False).order_by(InterviewSlot.datetime).all()
+        ]
 
 class AdminAdoptionResponseForm(FlaskForm):
     interview_status = SelectField(

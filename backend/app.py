@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
+from flask_migrate import Migrate
 from models import db, User
 from dotenv import load_dotenv
 import os
@@ -30,6 +31,7 @@ os.makedirs(CONTRACTS_FOLDER, exist_ok=True)
 
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
