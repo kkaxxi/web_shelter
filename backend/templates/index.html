@@ -1,3 +1,20 @@
-{% extends 'base.html' %} {% block content %}
-<p>Це головна сторінка притулку.</p>
+{% extends 'base.html' %} {% block title %}Meowspet{% endblock %} {% block
+content %}
+<section class="home-section">
+  <div class="container animate-title">
+    <h1 class="main-title">Ласкаво просимо до Meowspet!</h1>
+    <p>
+      Ми допомагаємо безпритульним тваринам знайти дім і турботливих господарів.
+      Наша мета — зробити процес усиновлення простим та зручним для всіх.
+    </p>
+    <img
+      src="{{ url_for('static', filename='images/mainphoto.png') }}"
+      alt="Тваринки"
+      class="main-image"
+    />
+    <a href="{{ url_for('animals.search_animals') }}">
+      <button class="button" type="button">Почати пошук</button>
+    </a>
+  </div>
+</section>
 {% endblock %}

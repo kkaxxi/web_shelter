@@ -70,7 +70,7 @@ def add_animal():
         db.session.add(animal)
         db.session.commit()
         flash("Тварину додано")
-        return redirect(url_for('animals.search_animals'))
+        return redirect(url_for('animals.add_animal'))
 
     return render_template('add_animal.html', form=form)
 

@@ -1,32 +1,53 @@
 {% extends "base.html" %} {% block title %}Додати тварину{% endblock %} {% block
 content %}
-<h2>Додати тварину</h2>
+<section class="form-section">
+  <div class="container">
+    <h2 class="form-title">Додати тварину</h2>
 
-<form method="post" enctype="multipart/form-data">
-  {{ form.hidden_tag() }} {{ form.name.label }}<br />
-  {{ form.name() }}<br /><br />
+    <form method="post" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
 
-  {{ form.species.label }}<br />
-  {{ form.species() }}<br /><br />
+      <div class="form-group">
+        {{ form.name.label }} {{ form.name(class_='form-control') }}
+      </div>
 
-  {{ form.age.label }}<br />
-  {{ form.age() }}<br /><br />
+      <div class="form-group">
+        {{ form.species.label }} {{ form.species(class_='form-control') }}
+      </div>
 
-  {{ form.gender.label }}<br />
-  {{ form.gender() }}<br /><br />
+      <div class="form-group">
+        {{ form.age.label }} {{ form.age(class_='form-control') }}
+      </div>
 
-  {{ form.size.label }}<br />
-  {{ form.size() }}<br /><br />
+      <div class="form-group">
+        {{ form.gender.label }} {{ form.gender(class_='form-control') }}
+      </div>
 
-  {{ form.status.label }}<br />
-  {{ form.status() }}<br /><br />
+      <div class="form-group">
+        {{ form.size.label }} {{ form.size(class_='form-control') }}
+      </div>
 
-  {{ form.photo.label }}<br />
-  {{ form.photo() }}<br /><br />
+      <div class="form-group">
+        {{ form.status.label }} {{ form.status(class_='form-control') }}
+      </div>
 
-  {{ form.description.label }}<br />
-  {{ form.description(rows=4, cols=40) }}<br /><br />
+      <div class="form-group">
+        {{ form.photo.label }} {{ form.photo(class_='form-control') }}
+      </div>
 
-  {{ form.submit() }}
-</form>
+      <div class="form-group">
+        {{ form.description.label }} {{ form.description(class_='form-control',
+        rows=4) }}
+      </div>
+
+      <button class="button" type="submit">{{ form.submit.label.text }}</button>
+
+      <p style="margin-top: 20px">
+        <a href="{{ url_for('animals.search_animals') }}" class="button"
+          >⬅ Повернутись до пошуку</a
+        >
+      </p>
+    </form>
+  </div>
+</section>
 {% endblock %}

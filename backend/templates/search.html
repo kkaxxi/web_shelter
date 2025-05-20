@@ -1,108 +1,147 @@
 {% extends 'base.html' %} {% block title %}Пошук тварин{% endblock %} {% block
 content %}
-<h2>Пошук тварин</h2>
-
-{% if current_user.is_authenticated %}
-<a href="{{ url_for('animals.favorites') }}" class="fav-link">❤️ Улюбленці</a>
-{% endif %}
-
-<form method="get">
-  <label>Категорія:</label>
-  <select name="species">
-    <option value="any">Не важливо</option>
-    <option value="кіт">Кішка</option>
-    <option value="собака">Собака</option>
-  </select>
-
-  <label>Стать:</label>
-  <select name="gender">
-    <option value="any">Не важливо</option>
-    <option value="female">Ж</option>
-    <option value="male">М</option>
-  </select>
-
-  <label>Вік:</label>
-  від
-  <input type="number" name="min_age" value="0" min="0" style="width: 50px" />
-  до
-  <input type="number" name="max_age" value="25" max="25" style="width: 50px" />
-
-  <label>Розмір:</label>
-  <select name="size">
-    <option value="any">Не важливо</option>
-    <option value="small">Маленький</option>
-    <option value="medium">Середній</option>
-    <option value="large">Великий</option>
-  </select>
-
-  <label>Статус:</label>
-  <select name="status">
-    <option value="any">Усі</option>
-    <option value="в притулку">в притулку</option>
-    <option value="усиновлено">усиновлено</option>
-  </select>
-
-  <button type="submit">Застосувати фільтри</button>
-  <a href="{{ url_for('animals.search_animals') }}">Очистити фільтри</a>
-</form>
-
-<hr />
-<a href="{{ url_for('animals.adoption_rules') }}" class="btn"
-  >📄 Правила усиновлення</a
->
-
-<div class="card-container">
-  {% for animal in animals %} {% if request.args.get('status') == 'усиновлено'
-  or animal.status != 'усиновлено' %}
-  <div class="card">
-    <a href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}">
-      <img src="{{ animal.photo_url }}" alt="{{ animal.name }}" />
-      <h4>{{ animal.name }}</h4>
+<section class="search-section">
+  <div class="search-header">
+    <a class="back-link" href="{{ url_for('index') }}">← Назад на головну</a>
+    <a class="link favorites-link" href="{{ url_for('animals.favorites') }}">
+      <img
+        src="{{ url_for('static', filename='images/star.svg') }}"
+        alt="⭐"
+        class="icon"
+      />
+      Улюблені
     </a>
-
-    <form
-      method="post"
-      action="{{ url_for('animals.toggle_favorite', animal_id=animal.id) }}"
-    >
-      <button
-        type="submit"
-        class="heart-btn"
-        {%
-        if
-        not
-        current_user.is_authenticated
-        %}
-        onclick="alert('❌ Щоб додати улюбленця — увійдіть або зареєструйтесь.'); return false;"
-        {%
-        endif
-        %}
-      >
-        {% if current_user.is_authenticated and animal.id in user_fav_ids %} ❤️
-        {% else %} 🤍 {% endif %}
-      </button>
-    </form>
-
-    {% if current_user.is_authenticated and current_user.role == 'admin' %}
-    <a href="{{ url_for('animals.edit_animal', animal_id=animal.id) }}"
-      >✏️ Редагувати</a
-    >
-    |
-    <form
-      method="post"
-      action="{{ url_for('animals.delete_animal', animal_id=animal.id) }}"
-      style="display: inline"
-    >
-      <button type="submit" onclick="return confirm('Точно видалити?')">
-        🗑️
-      </button>
-    </form>
-    <br />
-    {% if animal.status != 'усиновлено' %}
-    <a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}">
-      📄 Завантажити договір
-    </a>
-    {% endif %} {% endif %}
   </div>
-  {% endif %} {% endfor %}
-</div>
+
+  <h2 class="filter-title">Фільтри пошуку</h2>
+
+  <form class="filter-form" method="get">
+    <div class="filter-group">
+      <label class="filter-label">Категорія</label><br />
+      <input type="radio" name="species" value="any" checked /> Не важливо<br />
+      <input type="radio" name="species" value="кіт" /> Кішка<br />
+      <input type="radio" name="species" value="собака" /> Собака<br />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Стать</label><br />
+      <input type="radio" name="gender" value="any" checked /> Не важливо<br />
+      <input type="radio" name="gender" value="female" /> Ж<br />
+      <input type="radio" name="gender" value="male" /> М<br />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Вік</label><br />
+      від
+      <input
+        type="number"
+        name="min_age"
+        value="0"
+        min="0"
+        class="input-small"
+      />
+      до
+      <input
+        type="number"
+        name="max_age"
+        value="25"
+        max="25"
+        class="input-small"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Розмір</label><br />
+      <input type="radio" name="size" value="any" checked /> Не важливо<br />
+      <input type="radio" name="size" value="small" /> Маленький<br />
+      <input type="radio" name="size" value="medium" /> Середній<br />
+      <input type="radio" name="size" value="large" /> Великий<br />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label">Статус</label><br />
+      <select name="status">
+        <option value="any">Усі</option>
+        <option value="в притулку">в притулку</option>
+        <option value="усиновлено">усиновлено</option>
+      </select>
+    </div>
+
+    <div class="filter-buttons">
+      <a href="{{ url_for('animals.search_animals') }}" class="button"
+        >Очистити фільтри</a
+      >
+      <button class="button" type="submit">Застосувати фільтри</button>
+    </div>
+  </form>
+
+  <a href="{{ url_for('animals.adoption_rules') }}" class="button"
+    >📄 Правила усиновлення</a
+  >
+
+  <section class="results-list">
+    {% for animal in animals %} {% if request.args.get('status') == 'усиновлено'
+    or animal.status != 'усиновлено' %}
+    <article class="result-item">
+      <form
+        method="post"
+        action="{{ url_for('animals.toggle_favorite', animal_id=animal.id) }}"
+      >
+        <button
+          type="submit"
+          class="fav-button"
+          {%
+          if
+          not
+          current_user.is_authenticated
+          %}
+          onclick="alert('❌ Щоб додати улюбленця — увійдіть або зареєструйтесь.'); return false;"
+          {%
+          endif
+          %}
+        >
+          {% if current_user.is_authenticated and animal.id in user_fav_ids %}
+          ❤️ {% else %} 🤍 {% endif %}
+        </button>
+      </form>
+
+      <a
+        href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}"
+        class="result-link"
+      >
+        <img
+          class="result-image"
+          src="{{ animal.photo_url }}"
+          alt="{{ animal.name }}"
+        />
+        <h3 class="result-name">{{ animal.name }}</h3>
+      </a>
+
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <div class="admin-actions">
+        <a href="{{ url_for('animals.edit_animal', animal_id=animal.id) }}"
+          >✏️ Редагувати</a
+        >
+        |
+        <form
+          method="post"
+          action="{{ url_for('animals.delete_animal', animal_id=animal.id) }}"
+          style="display: inline"
+        >
+          <button type="submit" onclick="return confirm('Точно видалити?')">
+            🗑️
+          </button>
+        </form>
+        {% if animal.status != 'усиновлено' %}
+        <br />
+        <a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}"
+          >📄 Завантажити договір</a
+        >
+        {% endif %}
+      </div>
+      {% endif %}
+    </article>
+    {% endif %} {% endfor %}
+  </section>
+</section>
 {% endblock %}

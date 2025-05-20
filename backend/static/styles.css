@@ -1,0 +1,292 @@
+/* -------------------- FONTS -------------------- */
+@font-face {
+  font-display: swap;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 300;
+  src: url("/static/fonts/poppins-v21-latin-300.woff2") format("woff2");
+}
+@font-face {
+  font-display: swap;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/static/fonts/poppins-v21-latin-regular.woff2") format("woff2");
+}
+@font-face {
+  font-display: swap;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  src: url("/static/fonts/poppins-v21-latin-600.woff2") format("woff2");
+}
+@font-face {
+  font-display: swap;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 900;
+  src: url("/static/fonts/poppins-v21-latin-900.woff2") format("woff2");
+}
+
+/* -------------------- ROOT VARIABLES -------------------- */
+:root {
+  --site-dark: #7eaeb6;
+  --site-light: #78b1b4;
+  --button: #774c44;
+  --button-hover: #583c37;
+  --text-dark: #31261a;
+  --text-light: #fbf9f1;
+  --list: #e5e1da;
+  --accent-color: #007bff;
+  --accent-color-hover: #0056b3;
+  --nav: #f3757c;
+  --padding-section: 40px;
+  --margin-section: 20px;
+}
+
+/* -------------------- GLOBAL -------------------- */
+body {
+  background-color: var(--list);
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* -------------------- HEADINGS -------------------- */
+.main-title,
+.page-title,
+.form-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* -------------------- HEADER + NAV -------------------- */
+.header {
+  background-color: var(--nav);
+  padding: 20px 0;
+}
+.container-header,
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.logo {
+  width: 50px;
+  height: 50px;
+}
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+.menu .link {
+  color: var(--text-light);
+  text-decoration: none;
+  font-weight: 600;
+}
+.menu .link:hover {
+  color: var(--text-dark);
+}
+
+/* -------------------- BUTTON -------------------- */
+.button {
+  background-color: var(--button);
+  color: var(--text-light);
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.button:hover {
+  background-color: var(--button-hover);
+}
+
+/* -------------------- ADMIN MENU (dropdown using checkbox hack) -------------------- */
+.admin-dropdown-wrapper {
+  position: relative;
+}
+.admin-toggle {
+  background-color: var(--button);
+  color: var(--text-light);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+.admin-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  display: none;
+  flex-direction: column;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 100;
+  min-width: 180px;
+}
+.admin-dropdown a {
+  padding: 8px 12px;
+  color: var(--text-dark);
+  text-decoration: none;
+  border-radius: 5px;
+}
+.admin-dropdown a:hover {
+  background-color: var(--list);
+}
+#admin-menu-toggle:checked + .admin-toggle + .admin-dropdown {
+  display: flex;
+}
+
+/* -------------------- SEARCH PAGE + CARDS -------------------- */
+.results-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+.result-item {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.result-item.adopted {
+  opacity: 0.5;
+  pointer-events: none;
+  position: relative;
+  background-color: #dcdcdc; /* сірий фон */
+}
+
+.result-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+.result-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.result-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0;
+}
+.fav-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.fav-button:hover {
+  transform: scale(1.3);
+}
+.admin-actions {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.admin-actions a {
+  color: var(--accent-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+.admin-actions a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------- CARD BADGES -------------------- */
+.card.adopted {
+  opacity: 0.5;
+  pointer-events: none;
+  position: relative;
+}
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: crimson;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* -------------------- FOOTER -------------------- */
+.footer {
+  background-color: var(--nav);
+  padding: 20px 0;
+  color: var(--text-light);
+}
+.footer .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.footer ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+}
+.footer a {
+  color: var(--text-light);
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------- RESPONSIVE -------------------- */
+@media (max-width: 768px) {
+  .menu {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .footer .container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  .container-header,
+  .nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

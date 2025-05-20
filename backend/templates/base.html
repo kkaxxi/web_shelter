@@ -2,40 +2,88 @@
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
-    <title>{% block title %}Притулок тварин{% endblock %}</title>
+    <title>{% block title %}Meowspet{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
   </head>
   <body>
-    <header>
-      <h1>Притулок тварин</h1>
-      <nav>
-        <a href="{{ url_for('index') }}">Головна</a>
-        <a href="{{ url_for('animals.search_animals') }}">Пошук</a>
-        <a href="{{ url_for('help.help_page') }}">Як допомогти</a>
-        <a href="{{ url_for('reports.reports_page') }}">Звіти</a>
+    <header class="header">
+      <div class="container">
+        <div class="container-header">
+          <nav class="nav">
+            <a href="{{ url_for('index') }}">
+              <img
+                src="{{ url_for('static', filename='images/logo.svg') }}"
+                alt="Логотип"
+                class="logo"
+              />
+            </a>
+            <ul class="menu">
+              <li><a class="link" href="{{ url_for('index') }}">Головна</a></li>
+              <li>
+                <a class="link" href="{{ url_for('animals.search_animals') }}"
+                  >Пошук</a
+                >
+              </li>
+              <li>
+                <a class="link" href="{{ url_for('help.help_page') }}"
+                  >Як допомогти</a
+                >
+              </li>
+              <li>
+                <a class="link" href="{{ url_for('reports.reports_page') }}"
+                  >Звіти</a
+                >
+              </li>
+              {% if current_user.is_authenticated %} {% if current_user.role ==
+              'admin' %}
+              <li class="admin-dropdown-wrapper">
+                <input type="checkbox" id="admin-menu-toggle" hidden />
+                <label for="admin-menu-toggle" class="admin-toggle">⚙️</label>
+                <div class="admin-dropdown">
+                  <a href="{{ url_for('animals.add_animal') }}">➕ Додати</a>
+                  <a href="{{ url_for('animals.view_adoption_requests') }}"
+                    >📄 Заявки</a
+                  >
+                  <a href="{{ url_for('help.view_all_messages') }}"
+                    >📬 Повідомлення</a
+                  >
+                  <a href="{{ url_for('animals.add_interview_slot') }}"
+                    >🎥 Інтерв’ю</a
+                  >
+                </div>
+              </li>
 
-        {% if current_user.is_authenticated %} {% if current_user.role ==
-        'admin' %}
-        <a href="{{ url_for('animals.add_animal') }}">➕ Додати тварину</a>
-        <a href="{{ url_for('animals.view_adoption_requests') }}">📄 Заявки</a>
-        <a href="{{ url_for('help.view_all_messages') }}">📬 Повідомлення</a>
-        <a href="{{ url_for('animals.add_interview_slot') }}"
-          >➕ Слоти інтерв’ю</a
-        >
-
-        {% else %}
-        <a href="{{ url_for('animals.view_messages') }}">📩 Мої повідомлення</a>
-        {% endif %}
-
-        <a href="{{ url_for('auth.logout') }}">Вийти</a>
-        {% else %}
-        <a href="{{ url_for('auth.login') }}">Увійти</a>
-        <a href="{{ url_for('auth.register') }}">Реєстрація</a>
-        {% endif %}
-      </nav>
+              {% else %}
+              <li>
+                <a class="link" href="{{ url_for('animals.view_messages') }}">
+                  📩 Мої повідомлення
+                </a>
+              </li>
+              {% endif %}
+              <li>
+                <a class="link" href="{{ url_for('auth.logout') }}">Вийти</a>
+              </li>
+              {% else %}
+              <li>
+                <a class="link" href="{{ url_for('auth.login') }}">Увійти</a>
+              </li>
+              <li>
+                <a class="link" href="{{ url_for('auth.register') }}"
+                  >Реєстрація</a
+                >
+              </li>
+              {% endif %}
+            </ul>
+            <a href="{{ url_for('animals.search_animals') }}">
+              <button class="button" type="button">Пошук</button>
+            </a>
+          </nav>
+        </div>
+      </div>
     </header>
 
     {% with messages = get_flashed_messages() %} {% if messages %}
@@ -44,6 +92,44 @@
       <li>{{ message }}</li>
       {% endfor %}
     </ul>
-    {% endif %} {% endwith %} {% block content %}{% endblock %}
+    {% endif %} {% endwith %}
+
+    <main class="container">{% block content %}{% endblock %}</main>
+
+    <footer>
+      <nav class="footer">
+        <div class="container">
+          <a href="{{ url_for('index') }}">
+            <img
+              src="{{ url_for('static', filename='images/logo.svg') }}"
+              alt="Логотип"
+              class="logo"
+            />
+          </a>
+          <ul>
+            <li>
+              <a class="back-link" href="{{ url_for('index') }}">Головна</a>
+            </li>
+            <li>
+              <a class="back-link" href="{{ url_for('help.help_page') }}"
+                >Допомога</a
+              >
+            </li>
+            <li>
+              <a class="back-link" href="{{ url_for('reports.reports_page') }}"
+                >Звіти</a
+              >
+            </li>
+            <li>
+              <a
+                class="back-link"
+                href="{{ url_for('animals.search_animals') }}"
+                >Пошук</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </footer>
   </body>
 </html>

@@ -1,85 +1,131 @@
 {% extends 'base.html' %} {% block title %}Улюбленці{% endblock %} {% block
 content %}
-<h2>Улюбленці</h2>
+<section class="search-section">
+  <h2 class="filter-title">Улюбленці</h2>
 
-<form method="get">
-  <label>Категорія:</label>
-  <select name="species">
-    <option value="any">Не важливо</option>
-    <option value="кіт">Кішка</option>
-    <option value="собака">Собака</option>
-  </select>
+  <form class="filter-form" method="get">
+    <div class="filter-group">
+      <label>Категорія:</label>
+      <select name="species">
+        <option value="any">Не важливо</option>
+        <option value="кіт">Кішка</option>
+        <option value="собака">Собака</option>
+      </select>
+    </div>
 
-  <label>Стать:</label>
-  <select name="gender">
-    <option value="any">Не важливо</option>
-    <option value="female">Ж</option>
-    <option value="male">М</option>
-  </select>
+    <div class="filter-group">
+      <label>Стать:</label>
+      <select name="gender">
+        <option value="any">Не важливо</option>
+        <option value="female">Ж</option>
+        <option value="male">М</option>
+      </select>
+    </div>
 
-  <label>Вік:</label>
-  від
-  <input type="number" name="min_age" value="0" min="0" style="width: 50px" />
-  до
-  <input type="number" name="max_age" value="25" max="25" style="width: 50px" />
+    <div class="filter-group">
+      <label>Вік:</label><br />
+      від
+      <input
+        type="number"
+        name="min_age"
+        value="0"
+        min="0"
+        class="input-small"
+      />
+      до
+      <input
+        type="number"
+        name="max_age"
+        value="25"
+        max="25"
+        class="input-small"
+      />
+    </div>
 
-  <label>Розмір:</label>
-  <select name="size">
-    <option value="any">Не важливо</option>
-    <option value="small">Маленький</option>
-    <option value="medium">Середній</option>
-    <option value="large">Великий</option>
-  </select>
+    <div class="filter-group">
+      <label>Розмір:</label>
+      <select name="size">
+        <option value="any">Не важливо</option>
+        <option value="small">Маленький</option>
+        <option value="medium">Середній</option>
+        <option value="large">Великий</option>
+      </select>
+    </div>
 
-  <label>Статус:</label>
-  <select name="status">
-    <option value="any">Усі</option>
-    <option value="в притулку">в притулку</option>
-    <option value="усиновлено">усиновлено</option>
-  </select>
+    <div class="filter-group">
+      <label>Статус:</label>
+      <select name="status">
+        <option value="any">Усі</option>
+        <option value="в притулку">в притулку</option>
+        <option value="усиновлено">усиновлено</option>
+      </select>
+    </div>
 
-  <button type="submit">Застосувати фільтри</button>
-  <a href="{{ url_for('animals.search_animals') }}">Очистити фільтри</a>
-</form>
+    <div class="filter-buttons">
+      <a href="{{ url_for('animals.favorites') }}" class="button"
+        >Очистити фільтри</a
+      >
+      <button class="button" type="submit">Застосувати фільтри</button>
+    </div>
+  </form>
 
-<hr />
-
-<div class="card-container">
-  {% for animal in animals %}
-  <div class="card">
-    <a href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}">
-      <img src="{{ animal.photo_url }}" alt="{{ animal.name }}" />
-      <h4>{{ animal.name }}</h4>
-    </a>
-
-    {% if current_user.is_authenticated %}
-    <form
-      method="post"
-      action="{{ url_for('animals.toggle_favorite', animal_id=animal.id) }}"
+  <section class="results-list">
+    {% for animal in animals %}
+    <article
+      class="result-item {% if animal.status == 'усиновлено' %}adopted{% endif %}"
     >
-      {{ form.hidden_tag() }}
-      <button type="submit" class="heart-btn">
-        {% if animal.id in user_fav_ids %} ❤️ {% else %} 🤍 {% endif %}
-      </button>
-    </form>
-    {% endif %} {% if current_user.is_authenticated and current_user.role ==
-    'admin' %}
-    <a href="{{ url_for('animals.edit_animal', animal_id=animal.id) }}"
-      >✏️ Редагувати</a
-    >
-    |
-    <form
-      method="post"
-      action="{{ url_for('animals.delete_animal', animal_id=animal.id) }}"
-      style="display: inline"
-    >
-      {{ form.hidden_tag() }}
-      <button type="submit" onclick="return confirm('Точно видалити?')">
-        🗑️
-      </button>
-    </form>
-    {% endif %}
-  </div>
-  {% endfor %}
-</div>
+      {% if animal.status == 'усиновлено' %}
+      <span class="badge">Усиновлено</span>
+      {% endif %}
+
+      <form
+        method="post"
+        action="{{ url_for('animals.toggle_favorite', animal_id=animal.id) }}"
+      >
+        {{ form.hidden_tag() }}
+        <button type="submit" class="fav-button">
+          {% if animal.id in user_fav_ids %} ❤️ {% else %} 🤍 {% endif %}
+        </button>
+      </form>
+
+      <a
+        href="{{ url_for('animals.animal_detail', animal_id=animal.id) }}"
+        class="result-link"
+      >
+        <img
+          class="result-image"
+          src="{{ animal.photo_url }}"
+          alt="{{ animal.name }}"
+        />
+        <h3 class="result-name">{{ animal.name }}</h3>
+      </a>
+
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <div class="admin-actions">
+        <a href="{{ url_for('animals.edit_animal', animal_id=animal.id) }}"
+          >✏️ Редагувати</a
+        >
+        |
+        <form
+          method="post"
+          action="{{ url_for('animals.delete_animal', animal_id=animal.id) }}"
+          style="display: inline"
+        >
+          {{ form.hidden_tag() }}
+          <button type="submit" onclick="return confirm('Точно видалити?')">
+            🗑️
+          </button>
+        </form>
+        {% if animal.status != 'усиновлено' %}
+        <br />
+        <a href="{{ url_for('animals.upload_contract', animal_id=animal.id) }}"
+          >📄 Завантажити договір</a
+        >
+        {% endif %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </section>
+</section>
 {% endblock %}

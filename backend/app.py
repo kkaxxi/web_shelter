@@ -11,7 +11,7 @@ csrf = CSRFProtect()
 from routes import auth_bp, animals_bp, help_bp, reports_bp
 
 load_dotenv()
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, '..', 'db', 'database.db')}"
