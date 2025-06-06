@@ -288,7 +288,15 @@ def manage_adoption_request(req_id):
 
     if request.method == 'GET':
         form.interview_status.data = req.interview_status
-        form.reply.data = req.reply
+        if req.reply:
+            form.reply.data = req.reply
+        elif req.preferred_datetime:
+            date_str = req.preferred_datetime.strftime('%d.%m.%Y')
+            time_str = req.preferred_datetime.strftime('%H:%M')
+            form.reply.data = f"""Ось посилання на інтерв’ю:
+        Час: {date_str} о {time_str}
+        Посилання:"""
+
 
     if form.validate_on_submit():
         req.interview_status = form.interview_status.data
@@ -308,7 +316,6 @@ def manage_adoption_request(req_id):
         return redirect(url_for('animals.view_adoption_requests'))
 
     return render_template("admin_reply.html", form=form, data=req, mode="adoption")
-
 
 @animals_bp.route('/messages')
 @login_required

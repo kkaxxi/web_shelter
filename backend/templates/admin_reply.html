@@ -1,38 +1,47 @@
 {% extends "base.html" %} {% block title %} Відповідь – {{ mode|capitalize }} {%
 endblock %} {% block content %}
-<h2>
-  ✍️ Відповідь на {% if mode == 'adoption' %} заявку на усиновлення {% elif mode
-  == 'volunteer' %} волонтерську заявку {% elif mode == 'feedback' %}
-  повідомлення користувача {% endif %}
-</h2>
+<section class="admin-section">
+  <h2 class="page-title">
+    ✍️ Відповідь на {% if mode == 'adoption' %} заявку на усиновлення {% elif
+    mode == 'volunteer' %} волонтерську заявку {% elif mode == 'feedback' %}
+    повідомлення користувача {% endif %}
+  </h2>
 
-{% if mode == 'adoption' %}
-<p><strong>🐾 Тварина:</strong> {{ data.animal.name }}</p>
-<p>
-  <strong>👤 Користувач:</strong> {{ data.user.username }} | {{ data.user.email
-  }}
-</p>
-<p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
-{% elif mode == 'volunteer' %}
-<p><strong>👤 Email:</strong> {{ data.email }}</p>
-<p><strong>Тип допомоги:</strong> {{ data.help_type }}</p>
-<p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
-{% elif mode == 'feedback' %}
-<p><strong>👤 Email:</strong> {{ data.email }}</p>
-<p><strong>Повідомлення:</strong><br />{{ data.message }}</p>
-{% endif %}
+  <div class="msg-card">
+    {% if mode == 'adoption' %}
+    <p><strong>🐾 Тварина:</strong> {{ data.animal.name }}</p>
+    <p>
+      <strong>👤 Користувач:</strong> {{ data.user.username }} | {{
+      data.user.email }}
+    </p>
+    <p>
+      <strong>Обраний слот інтерв’ю:</strong>
+      {{ data.preferred_datetime.strftime('%d.%m.%Y о %H:%M') if
+      data.preferred_datetime else '—' }}
+    </p>
+    <p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
+    {% elif mode == 'volunteer' %}
+    <p><strong>👤 Email:</strong> {{ data.email }}</p>
+    <p><strong>Тип допомоги:</strong> {{ data.help_type }}</p>
+    <p><strong>Коментар:</strong><br />{{ data.comment or '—' }}</p>
+    {% elif mode == 'feedback' %}
+    <p><strong>👤 Email:</strong> {{ data.email }}</p>
+    <p><strong>Повідомлення:</strong><br />{{ data.message }}</p>
+    {% endif %}
+  </div>
 
-<form method="post">
-  {{ form.hidden_tag() }} {% if form.interview_status %}
-  <label>{{ form.interview_status.label }}</label><br />
-  {{ form.interview_status() }}<br /><br />
-  {% endif %}
+  <form method="post" class="admin-reply-form">
+    {{ form.hidden_tag() }} {% if form.interview_status %}
+    <label>{{ form.interview_status.label }}</label>
+    {{ form.interview_status(class="form-control") }} {% endif %}
 
-  <label>{{ form.reply.label }}</label><br />
-  {{ form.reply(rows=6, cols=60) }}<br /><br />
+    <label>{{ form.reply.label }}</label>
+    {{ form.reply(rows=6, class="form-control") }} {{
+    form.submit(class="button") }}
+  </form>
 
-  {{ form.submit(class="btn") }}
-</form>
-
-<p><a href="{{ request.referrer or url_for('help.help_page') }}">⬅ Назад</a></p>
+  <p>
+    <a href="{{ request.referrer or url_for('help.help_page') }}">⬅ Назад</a>
+  </p>
+</section>
 {% endblock %}

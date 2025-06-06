@@ -2,8 +2,12 @@
 %}
 <h2>Вхід</h2>
 <form method="post">
-  {{ form.hidden_tag() }} {{ form.email.label }} {{ form.email(size=32) }}<br />
-  {{ form.password.label }} {{ form.password(size=32) }}<br />
-  {{ form.submit() }}
+  {{ form.hidden_tag() }}
+  <div>{{ form.email.label }} {{ form.email(class_='form-control') }}</div>
+  <div>
+    {{ form.password.label }} {{ form.password(class_='form-control') }}
+  </div>
+  <div>{{ form.submit(class_='button') }}</div>
 </form>
+
 {% endblock %}

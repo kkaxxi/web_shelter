@@ -94,9 +94,18 @@ def view_all_messages():
         return render_template('admin_list.html', requests=requests, mode='feedback')
 
     else:
-        # show == 'all': можеш залишити старий admin_messages.html або зробити два окремі запити
-        flash("⚠️ Поки що перегляд одразу всіх типів повідомлень не підтримується тут.")
-        return redirect(url_for('help.help_page'))
+        # Об'єднуємо всі повідомлення у один список з тегом типу
+        volunteer = VolunteerRequest.query.order_by(VolunteerRequest.timestamp.desc()).all()
+        feedback = Feedback.query.order_by(Feedback.timestamp.desc()).all()
+        combined = [
+            *[{'type': 'volunteer', 'obj': v} for v in volunteer],
+            *[{'type': 'feedback', 'obj': f} for f in feedback]
+        ]
+        # Можна відсортувати об'єднано
+        combined.sort(key=lambda x: x['obj'].timestamp, reverse=(sort_order == 'desc'))
+        return render_template('admin_list.html', combined_requests=combined, mode='all')
+
+
 
 
 
